@@ -265,9 +265,6 @@
 
 <div class="header">
   <div class="logo">DATA<span>VIZ</span> · MCQ</div>
-  <div style="font-family:'Space Mono',monospace;font-size:0.72rem;color:var(--muted);letter-spacing:1px;text-align:center;line-height:1.4;">
-    <span style="color:var(--accent3);font-weight:700;">AYUSH KUMAR MAURYA</span>
-  </div>
   <div class="score-bar">
     <div class="score-chip">Score: <span id="liveScore">0</span>/<span id="liveAnswered">0</span></div>
     <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
@@ -275,6 +272,9 @@
 </div>
 
 <div class="hero">
+  <div style="font-family:'Space Mono',monospace;font-size:0.75rem;letter-spacing:2px;color:var(--muted);margin-bottom:18px;">
+    DEVELOPER &nbsp;·&nbsp; <span style="color:var(--accent3);font-weight:700;">AYUSH KUMAR MAURYA</span>
+  </div>
   <h1>Data Visualization<br><em>100 Practice MCQs</em></h1>
   <p>Units I · II · III — Statistics, Pandas, Matplotlib &amp; More</p>
   <div class="unit-legend">
@@ -362,7 +362,7 @@ const questions = [
    ans:3, exp:"Tuples are ordered and immutable — once created, their elements cannot be changed."},
 
   {u:1, q:"What is the output of `type(3.14)` in Python?",
-   opts:["<class 'int'>","<class 'str'>","<class 'float'>","<class 'complex'>"],
+   opts:["&lt;class 'int'&gt;","&lt;class 'str'&gt;","&lt;class 'float'&gt;","&lt;class 'complex'&gt;"],
    ans:2, exp:"3.14 is a floating-point number, so Python's type() returns <class 'float'>."},
 
   {u:1, q:"Which library is used for creating static, animated, and interactive visualizations in Python?",
