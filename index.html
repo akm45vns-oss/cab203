@@ -376,8 +376,16 @@ h1.htitle .hl{background:linear-gradient(135deg,var(--lime) 0%,var(--green) 50%,
   <!-- LEADERBOARD -->
   <div class="lb-section">
     <div class="lb-header">
-      <div class="lb-title">🏆 &nbsp;Leaderboard</div>
-      <button class="lb-clear" onclick="clearLeaderboard()">🗑 Clear All</button>
+      <div>
+        <div class="lb-title">🏆 &nbsp;Global Leaderboard</div>
+        <div style="font-size:.68rem;color:var(--muted2);margin-top:3px;letter-spacing:.3px">
+          🌐 Shared across all devices &amp; players
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="lb-clear" onclick="refreshLeaderboard()" style="border-color:rgba(163,230,53,.2);color:var(--lime)">⟳ Refresh</button>
+        <button class="lb-clear" onclick="clearLeaderboard()">🗑 Clear All</button>
+      </div>
     </div>
     <div class="lb-table">
       <div class="lb-head">
@@ -541,30 +549,34 @@ function startWithName(){
   selectUnit(pendingUnit);
 }
 
-/* ── STORAGE HELPERS ── */
+/* ── STORAGE HELPERS (shared=true → visible to ALL players on ALL devices) ── */
 async function saveScore(entry){
   try{
-    const key='scores:'+Date.now();
-    await window.storage.set(key,JSON.stringify(entry));
+    const key='scores:'+Date.now()+':'+Math.random().toString(36).slice(2,7);
+    await window.storage.set(key, JSON.stringify(entry), true);
   }catch(e){console.warn('Storage save failed:',e)}
 }
 async function loadScores(){
   try{
-    const res=await window.storage.list('scores:');
+    const res=await window.storage.list('scores:', true);
     if(!res||!res.keys||!res.keys.length) return [];
     const scores=[];
     for(const k of res.keys){
-      try{const r=await window.storage.get(k);if(r)scores.push(JSON.parse(r.value));}catch(e){}
+      try{
+        const r=await window.storage.get(k, true);
+        if(r) scores.push(JSON.parse(r.value));
+      }catch(e){}
     }
-    return scores.sort((a,b)=>b.pct-a.pct);
+    return scores.sort((a,b)=>b.pct-a.pct||a.ts-b.ts);
   }catch(e){return []}
 }
 async function clearLeaderboard(){
-  if(!confirm('Clear all leaderboard scores?')) return;
+  if(!confirm('⚠️ This will clear ALL scores for EVERY player. Are you sure?')) return;
   try{
-    const res=await window.storage.list('scores:');
-    if(res&&res.keys) for(const k of res.keys) await window.storage.delete(k);
-    renderLeaderboard([]);toast('🗑 Leaderboard cleared!');
+    const res=await window.storage.list('scores:', true);
+    if(res&&res.keys) for(const k of res.keys) await window.storage.delete(k, true);
+    renderLeaderboard([]);
+    toast('🗑 Leaderboard cleared for all players!');
   }catch(e){toast('Could not clear — storage unavailable')}
 }
 
