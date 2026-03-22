@@ -230,9 +230,82 @@ h1.htitle .hl{background:linear-gradient(135deg,var(--lime) 0%,var(--green) 50%,
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(163,230,53,.2);border-radius:100px}
 ::-webkit-scrollbar-thumb:hover{background:rgba(163,230,53,.4)}
+
+/* NAME MODAL */
+.modal-overlay{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-overlay.show{opacity:1;pointer-events:all}
+.modal-box{background:rgba(15,30,18,.98);border:1px solid var(--border2);border-radius:24px;
+  padding:36px 32px;width:90%;max-width:420px;text-align:center;
+  transform:scale(.92) translateY(20px);transition:transform .3s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 24px 80px rgba(0,0,0,.5)}
+.modal-overlay.show .modal-box{transform:scale(1) translateY(0)}
+.modal-icon{font-size:2.5rem;margin-bottom:12px}
+.modal-title{font-size:1.3rem;font-weight:800;margin-bottom:6px;letter-spacing:-.3px}
+.modal-sub{font-size:.84rem;color:var(--muted2);margin-bottom:22px;line-height:1.5}
+.name-input{width:100%;padding:13px 18px;border-radius:12px;font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:.95rem;font-weight:600;background:rgba(255,255,255,.05);
+  border:1px solid var(--border2);color:var(--text);outline:none;
+  transition:border-color .2s,box-shadow .2s;margin-bottom:16px;letter-spacing:.2px}
+.name-input::placeholder{color:var(--muted);font-weight:400}
+.name-input:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(163,230,53,.12)}
+.modal-btns{display:flex;gap:10px;justify-content:center}
+
+/* LEADERBOARD */
+.lb-section{width:100%;max-width:860px;margin-top:40px}
+.lb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding:0 2px}
+.lb-title{font-size:1rem;font-weight:800;display:flex;align-items:center;gap:8px}
+.lb-clear{font-size:.73rem;color:var(--muted2);cursor:pointer;padding:5px 12px;border-radius:100px;
+  border:1px solid rgba(255,255,255,.08);background:transparent;font-family:'Plus Jakarta Sans',sans-serif;
+  transition:all .2s;font-weight:600}
+.lb-clear:hover{border-color:var(--red);color:var(--red)}
+.lb-table{width:100%;border-radius:16px;overflow:hidden;border:1px solid var(--border);background:var(--glass2);backdrop-filter:blur(16px)}
+.lb-head{display:grid;grid-template-columns:40px 1fr 80px 100px 90px 100px;gap:0;
+  padding:12px 20px;border-bottom:1px solid var(--border);
+  font-size:.67rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2)}
+.lb-row{display:grid;grid-template-columns:40px 1fr 80px 100px 90px 100px;gap:0;
+  padding:13px 20px;border-bottom:1px solid rgba(255,255,255,.03);align-items:center;
+  transition:background .15s}
+.lb-row:last-child{border-bottom:none}
+.lb-row:hover{background:rgba(163,230,53,.03)}
+.lb-row.gold{background:rgba(250,204,21,.04)}
+.lb-row.silver{background:rgba(192,192,192,.03)}
+.lb-row.bronze{background:rgba(205,127,50,.03)}
+.lb-rank{font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:700}
+.lb-rank.r1{color:#facc15}.lb-rank.r2{color:#d1d5db}.lb-rank.r3{color:#fb923c}
+.lb-name{font-size:.88rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-unit{font-size:.72rem;padding:3px 8px;border-radius:100px;display:inline-flex;font-weight:600}
+.lb-unit.ua{background:rgba(240,253,244,.06);color:var(--text);border:1px solid rgba(255,255,255,.08)}
+.lb-unit.u1{background:rgba(163,230,53,.1);color:var(--lime)}
+.lb-unit.u2{background:rgba(74,222,128,.1);color:var(--green)}
+.lb-unit.u3{background:rgba(250,204,21,.1);color:var(--yellow)}
+.lb-score{font-family:'JetBrains Mono',monospace;font-size:.88rem;font-weight:700;color:var(--lime)}
+.lb-grade{font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:700}
+.lb-date{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted2)}
+.lb-empty{text-align:center;padding:40px 20px;color:var(--muted2);font-size:.88rem}
+.lb-loading{text-align:center;padding:30px;color:var(--muted2);font-size:.84rem}
+@media(max-width:640px){
+  .lb-head,.lb-row{grid-template-columns:36px 1fr 70px 72px}
+  .lb-head .lbh-grade,.lb-head .lbh-date,.lb-row .lb-grade,.lb-row .lb-date{display:none}
+}
 </style>
 </head>
 <body>
+<!-- NAME MODAL -->
+<div class="modal-overlay" id="nameModal">
+  <div class="modal-box">
+    <div class="modal-icon">🎮</div>
+    <div class="modal-title">Enter Your Name</div>
+    <div class="modal-sub">Your name and score will be saved to the leaderboard after the test.</div>
+    <input class="name-input" id="playerNameInput" type="text" placeholder="e.g. Ayush Kumar Maurya" maxlength="30"
+      onkeydown="if(event.key==='Enter')startWithName()"/>
+    <div class="modal-btns">
+      <button class="btn bghost" onclick="closeModal()">Cancel</button>
+      <button class="btn blime" onclick="startWithName()">▶ &nbsp;Start Test</button>
+    </div>
+  </div>
+</div>
+
 <div class="mesh-bg"></div>
 <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
 <div class="grid-bg"></div>
@@ -265,38 +338,53 @@ h1.htitle .hl{background:linear-gradient(135deg,var(--lime) 0%,var(--green) 50%,
       </a>
     </div>
     <h1 class="htitle">Master Data<br><span class="hl">Visualization</span></h1>
-    <p class="hsub">100 handcrafted MCQs across 3 units — Statistics, Pandas &amp; Matplotlib. Instant feedback with explanations.</p>
+    <p class="hsub">60 carefully selected MCQs across 3 units — Statistics, Pandas &amp; Matplotlib. Instant feedback with explanations.</p>
     <div class="hstats">
-      <div class="hs"><span class="hsv">100</span><span class="hsl">Questions</span></div>
+      <div class="hs"><span class="hsv">60</span><span class="hsl">Questions</span></div>
       <div class="hs"><span class="hsv">3</span><span class="hsl">Units</span></div>
       <div class="hs"><span class="hsv">A–F</span><span class="hsl">Grading</span></div>
     </div>
   </div>
   <div class="slbl">📚 &nbsp;Choose Your Test</div>
   <div class="ugrid">
-    <div class="ucard ca" onclick="selectUnit('all')">
+    <div class="ucard ca" onclick="openModal('all')">
       <div class="uctop"><div class="ucemoji">🌐</div><div class="ucpill pa">FULL TEST</div></div>
-      <div class="uctitle">All Units</div><div class="uccount">100 Questions</div>
+      <div class="uctitle">All Units</div><div class="uccount">60 Questions</div>
       <div class="uctopics">Stats · Python · Pandas · NumPy · Matplotlib · All Topics</div>
       <div class="ucarrow">→</div>
     </div>
-    <div class="ucard c1" onclick="selectUnit(1)">
+    <div class="ucard c1" onclick="openModal(1)">
       <div class="uctop"><div class="ucemoji">📊</div><div class="ucpill p1">UNIT I</div></div>
-      <div class="uctitle" style="color:var(--lime)">Statistics &amp; Python</div><div class="uccount">33 Questions</div>
+      <div class="uctitle" style="color:var(--lime)">Statistics &amp; Python</div><div class="uccount">20 Questions</div>
       <div class="uctopics">Inferential Stats · Normal Distribution · Sampling · Data Types · Python Basics · Libraries</div>
       <div class="ucarrow">→</div>
     </div>
-    <div class="ucard c2" onclick="selectUnit(2)">
+    <div class="ucard c2" onclick="openModal(2)">
       <div class="uctop"><div class="ucemoji">🐼</div><div class="ucpill p2">UNIT II</div></div>
-      <div class="uctitle" style="color:var(--green)">Data Manipulation</div><div class="uccount">33 Questions</div>
+      <div class="uctitle" style="color:var(--green)">Data Manipulation</div><div class="uccount">20 Questions</div>
       <div class="uctopics">NumPy · Pandas · DataFrames · Missing Data · Merging · GroupBy · String Ops · File I/O</div>
       <div class="ucarrow">→</div>
     </div>
-    <div class="ucard c3" onclick="selectUnit(3)">
+    <div class="ucard c3" onclick="openModal(3)">
       <div class="uctop"><div class="ucemoji">📈</div><div class="ucpill p3">UNIT III</div></div>
-      <div class="uctitle" style="color:var(--yellow)">Matplotlib &amp; Viz</div><div class="uccount">34 Questions</div>
+      <div class="uctitle" style="color:var(--yellow)">Matplotlib &amp; Viz</div><div class="uccount">20 Questions</div>
       <div class="uctopics">Jupyter · Line/Bar/Hist/Scatter · Subplots · Pie · Box · Waffle Charts · NumPy Arrays</div>
       <div class="ucarrow">→</div>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div class="lb-section">
+    <div class="lb-header">
+      <div class="lb-title">🏆 &nbsp;Leaderboard</div>
+      <button class="lb-clear" onclick="clearLeaderboard()">🗑 Clear All</button>
+    </div>
+    <div class="lb-table">
+      <div class="lb-head">
+        <span>#</span><span>Player</span><span>Unit</span><span>Score</span>
+        <span class="lbh-grade">Grade</span><span class="lbh-date">Date</span>
+      </div>
+      <div id="lbBody"><div class="lb-loading">Loading scores...</div></div>
     </div>
   </div>
 </div>
@@ -356,109 +444,74 @@ h1.htitle .hl{background:linear-gradient(135deg,var(--lime) 0%,var(--green) 50%,
 
 <script>
 const questions=[
-  {u:1,q:"What is the primary purpose of descriptive statistics?",opts:["Draw conclusions about a population from a sample","Summarize and describe the features of a dataset","Predict future outcomes using probability","Test hypotheses using inferential methods"],ans:1,exp:"Descriptive statistics organize, summarize, and present data features without going beyond the data itself."},
-  {u:1,q:"Which of the following best describes inferential statistics?",opts:["Calculating mean and median of raw data","Drawing conclusions about a population based on a sample","Counting the frequency of observations","Constructing bar charts and histograms"],ans:1,exp:"Inferential statistics use sample data to make inferences or predictions about a larger population."},
-  {u:1,q:"A random variable that can take any value within a range is called:",opts:["Discrete random variable","Nominal variable","Continuous random variable","Categorical variable"],ans:2,exp:"Continuous random variables can take any value within an interval, unlike discrete ones which take countable values."},
-  {u:1,q:"The normal probability distribution is also known as:",opts:["Poisson distribution","Bell curve","Binomial distribution","Skewed distribution"],ans:1,exp:"The normal distribution is famously shaped like a bell, symmetric about its mean."},
-  {u:1,q:"In a normal distribution, what percentage of data falls within ±1 standard deviation of the mean?",opts:["68%","95%","99.7%","50%"],ans:0,exp:"The empirical rule (68-95-99.7 rule) states approximately 68% of data falls within ±1σ."},
-  {u:1,q:"Which sampling technique divides the population into subgroups and samples from each?",opts:["Simple random sampling","Systematic sampling","Stratified sampling","Cluster sampling"],ans:2,exp:"Stratified sampling divides population into strata (subgroups) and samples proportionally from each."},
-  {u:1,q:"Nominal data is best described as:",opts:["Data with a meaningful order and equal intervals","Data with categories without any natural order","Data measured on a continuous scale","Data with a true zero point"],ans:1,exp:"Nominal data consists of categories with no inherent ranking, e.g., gender, eye color, religion."},
-  {u:1,q:"Which of the following is an example of ordinal data?",opts:["Temperature in Celsius","Customer satisfaction rating (1–5 stars)","Weight in kilograms","Blood type (A, B, AB, O)"],ans:1,exp:"Ordinal data has a meaningful order but unequal intervals between values, like satisfaction ratings."},
-  {u:1,q:"What is the key difference between ordinal and nominal data?",opts:["Ordinal data has a true zero; nominal does not","Ordinal data has a natural order; nominal does not","Nominal data is numerical; ordinal is categorical","They are the same type of data"],ans:1,exp:"The defining feature of ordinal data is its meaningful ranking/ordering, which nominal data lacks."},
-  {u:1,q:"Which Python library is most commonly used for numerical computing?",opts:["Matplotlib","Pandas","NumPy","Seaborn"],ans:2,exp:"NumPy (Numerical Python) is the foundational library for numerical computation and array operations in Python."},
-  {u:1,q:"What does the `//` operator do in Python?",opts:["Modulus (remainder)","Exponentiation","Floor division","Regular division"],ans:2,exp:"The `//` operator performs floor division, returning the integer quotient rounded down."},
-  {u:1,q:"Which data type in Python is immutable and ordered?",opts:["List","Dictionary","Set","Tuple"],ans:3,exp:"Tuples are ordered and immutable — once created, their elements cannot be changed."},
-  {u:1,q:"What is the output of `type(3.14)` in Python?",opts:["&lt;class 'int'&gt;","&lt;class 'str'&gt;","&lt;class 'float'&gt;","&lt;class 'complex'&gt;"],ans:2,exp:"3.14 is a floating-point number, so Python's type() returns <class 'float'>."},
-  {u:1,q:"Which library is used for creating static, animated, and interactive visualizations in Python?",opts:["NumPy","Pandas","Matplotlib","Scikit-learn"],ans:2,exp:"Matplotlib is the core Python plotting library for creating a wide variety of static and interactive charts."},
-  {u:1,q:"What is the use of the `%` operator in Python?",opts:["Exponentiation","Floor division","Modulus (remainder after division)","Bitwise AND"],ans:2,exp:"The `%` operator returns the remainder when one number is divided by another."},
-  {u:1,q:"The mean of a normal distribution is always:",opts:["Greater than the median","Less than the mode","Equal to the median and mode","Different from the median"],ans:2,exp:"In a perfect normal distribution, mean = median = mode, all located at the center."},
-  {u:1,q:"A population parameter estimated from a sample is called a:",opts:["Variable","Statistic","Constant","Distribution"],ans:1,exp:"A sample statistic (like sample mean x̄) estimates the corresponding population parameter (like μ)."},
-  {u:1,q:"Which of the following is NOT a Python arithmetic operator?",opts:["**","//","%","&&"],ans:3,exp:"&& is not a Python operator. Python uses `and` for logical AND. && is used in languages like C/Java."},
+  // ── UNIT I — 20 Questions: Statistics & Python Basics ──
+  {u:1,q:"What is the primary purpose of descriptive statistics?",opts:["Draw conclusions about a population","Summarize and describe features of a dataset","Predict future outcomes using probability","Test hypotheses using inferential methods"],ans:1,exp:"Descriptive statistics organize, summarize, and present data features without going beyond the data itself."},
+  {u:1,q:"Inferential statistics is used to:",opts:["Only calculate mean and median","Draw conclusions about a population from a sample","Count frequency of data values","Create visualizations from raw data"],ans:1,exp:"Inferential statistics uses sample data to make inferences or predictions about a larger population."},
+  {u:1,q:"Which of the following is a continuous random variable?",opts:["Number of students in a class","Result of rolling a die","Height of a person","Number of cars in a parking lot"],ans:2,exp:"Height can take any real value within a range — a classic continuous random variable."},
+  {u:1,q:"The normal distribution is symmetric about its:",opts:["Variance","Standard deviation","Mean","Range"],ans:2,exp:"The normal distribution is perfectly symmetric — mean = median = mode at the center."},
+  {u:1,q:"In a normal distribution, approximately what % of data lies within ±2 standard deviations?",opts:["68%","95%","99.7%","50%"],ans:1,exp:"The empirical rule states ~95% of data falls within ±2σ of the mean."},
+  {u:1,q:"Stratified sampling divides the population into:",opts:["Random clusters","Subgroups (strata) and samples from each","Equal halves","Time-based intervals"],ans:1,exp:"Stratified sampling divides the population into strata and samples proportionally from each subgroup."},
+  {u:1,q:"Nominal data is best described as:",opts:["Data with a meaningful order and equal intervals","Categories without any natural order","Continuous measurements","Data with a true zero point"],ans:1,exp:"Nominal data has no inherent ranking — e.g., eye color, blood type, religion."},
+  {u:1,q:"Which is an example of ordinal data?",opts:["Temperature in Celsius","Weight in kilograms","Customer satisfaction (1–5 stars)","Country of birth"],ans:2,exp:"Ordinal data has a meaningful order (1 < 2 < 3...) but unequal intervals between values."},
+  {u:1,q:"The key difference between ordinal and nominal data is:",opts:["Ordinal has a true zero","Ordinal has a natural order; nominal does not","Nominal is numerical","They are identical"],ans:1,exp:"Ordinal data can be ranked/ordered; nominal data cannot."},
+  {u:1,q:"Which of the following is an example of interval data?",opts:["Blood type","Eye color","Temperature in Celsius","Number of siblings"],ans:2,exp:"Celsius temperature has equal intervals but no true zero — a hallmark of interval data."},
+  {u:1,q:"What does the `//` operator do in Python?",opts:["Modulus","Exponentiation","Floor division","Regular division"],ans:2,exp:"`//` performs floor division — returns the integer quotient rounded down."},
+  {u:1,q:"Which Python data type is immutable and ordered?",opts:["List","Dictionary","Set","Tuple"],ans:3,exp:"Tuples are ordered and immutable — once created, elements cannot be changed."},
+  {u:1,q:"What is the output of `type(3.14)` in Python?",opts:["&lt;class 'int'&gt;","&lt;class 'str'&gt;","&lt;class 'float'&gt;","&lt;class 'complex'&gt;"],ans:2,exp:"3.14 is a floating-point number; Python's type() returns &lt;class 'float'&gt;."},
+  {u:1,q:"Which Python library is the foundation for numerical array computing?",opts:["Matplotlib","Pandas","NumPy","Seaborn"],ans:2,exp:"NumPy (Numerical Python) is the foundational library for array operations and numerical computation."},
   {u:1,q:"Seaborn is built on top of which library?",opts:["NumPy","Pandas","Matplotlib","SciPy"],ans:2,exp:"Seaborn is a high-level statistical visualization library built on top of Matplotlib."},
-  {u:1,q:"What type of data is 'country of birth'?",opts:["Continuous","Ordinal","Nominal","Interval"],ans:2,exp:"Country of birth is nominal data — it represents categories with no natural ordering."},
-  {u:1,q:"In Python, which keyword is used to define a function?",opts:["func","define","def","function"],ans:2,exp:"Python uses the `def` keyword to define a function, followed by the function name and parameters."},
-  {u:1,q:"Which of the following represents a discrete random variable?",opts:["Height of a person","Temperature of a city","Number of students in a class","Weight of a fruit"],ans:2,exp:"Number of students is countable and can only take integer values — a classic discrete random variable."},
-  {u:1,q:"What does the `!=` operator check in Python?",opts:["Assignment","Equality","Not equal to","Greater than"],ans:2,exp:"`!=` is the 'not equal to' comparison operator, returning True if operands are not equal."},
-  {u:1,q:"Which visualization library allows interactive plots with hover/zoom features in Python?",opts:["Matplotlib","Seaborn","Plotly","NumPy"],ans:2,exp:"Plotly creates interactive visualizations with features like hover tooltips, zoom, and pan."},
-  {u:1,q:"The standard deviation measures:",opts:["The central value of data","The spread of data around the mean","The skewness of the distribution","The number of observations"],ans:1,exp:"Standard deviation quantifies the amount of variation/spread of values around the mean."},
-  {u:1,q:"Which statement about Python lists is TRUE?",opts:["Lists are immutable","Lists can only store integers","Lists are ordered and mutable","Lists cannot contain duplicate values"],ans:2,exp:"Python lists are ordered, mutable (changeable), and can contain duplicates and mixed data types."},
-  {u:1,q:"A `z-score` tells us:",opts:["The frequency of a value","How many standard deviations a value is from the mean","The median of the dataset","The interquartile range"],ans:1,exp:"The z-score standardizes a value showing its distance from the mean in standard deviation units."},
-  {u:1,q:"Which Python data structure uses key-value pairs?",opts:["List","Tuple","Set","Dictionary"],ans:3,exp:"Dictionaries store data as key-value pairs, allowing fast lookup by key."},
-  {u:1,q:"In sampling, what is a 'sampling frame'?",opts:["The shape of data distribution","The complete list from which a sample is drawn","The margin of error","The sample size formula"],ans:1,exp:"A sampling frame is the complete list of all members of the population from which a sample is selected."},
-  {u:1,q:"Plotly Express is part of which library?",opts:["Matplotlib","Seaborn","Plotly","Bokeh"],ans:2,exp:"Plotly Express is a high-level interface within the Plotly library for creating figures quickly."},
-  {u:1,q:"Which of the following correctly installs a Python library?",opts:["install pandas","python get pandas","pip install pandas","get-pip pandas"],ans:2,exp:"`pip install <library>` is the standard command to install Python packages from PyPI."},
-  {u:1,q:"Boolean data type in Python can hold:",opts:["Any integer value","Only True or False","Any string value","Float values between 0 and 1"],ans:1,exp:"Python's bool type holds only two values: True or False (which also equal 1 and 0 numerically)."},
-  {u:1,q:"Which of these is an example of interval data?",opts:["Eye color","Blood type","Temperature in Celsius","Number of siblings"],ans:2,exp:"Temperature in Celsius is interval data — it has equal intervals but no true zero (0°C is not 'no temperature')."},
-  {u:2,q:"What does NumPy stand for?",opts:["New Python","Numerical Python","Next Python","Node Python"],ans:1,exp:"NumPy stands for Numerical Python — it's Python's core library for numerical array computation."},
-  {u:2,q:"Which Pandas data structure is a one-dimensional labeled array?",opts:["DataFrame","Array","Series","Matrix"],ans:2,exp:"A Pandas Series is a one-dimensional labeled array capable of holding any data type."},
-  {u:2,q:"Which Pandas data structure is a two-dimensional labeled table?",opts:["Series","Array","Matrix","DataFrame"],ans:3,exp:"A DataFrame is a 2D labeled data structure like a spreadsheet or SQL table, with rows and columns."},
-  {u:2,q:"How do you import Pandas in Python?",opts:["import pandas","import pd","import pandas as pd","from pandas import *"],ans:2,exp:"The conventional way is `import pandas as pd`, making all pandas functions accessible via `pd`."},
-  {u:2,q:"Which function reads a CSV file in Pandas?",opts:["pd.load_csv()","pd.read_csv()","pd.open_csv()","pd.import_csv()"],ans:1,exp:"`pd.read_csv('filename.csv')` is the standard Pandas function to load CSV files into a DataFrame."},
-  {u:2,q:"What does `df.head()` return by default?",opts:["Last 5 rows","First 10 rows","First 5 rows","Column names only"],ans:2,exp:"`df.head()` returns the first 5 rows of a DataFrame by default. Use `df.head(n)` for n rows."},
-  {u:2,q:"Which method is used to check for missing values in a DataFrame?",opts:["df.missing()","df.isnull()","df.na_check()","df.checkna()"],ans:1,exp:"`df.isnull()` returns a boolean DataFrame indicating which values are NaN/missing."},
-  {u:2,q:"How do you drop rows with missing values in Pandas?",opts:["df.remove_na()","df.drop_missing()","df.dropna()","df.clean()"],ans:2,exp:"`df.dropna()` removes all rows that contain at least one missing value (NaN)."},
-  {u:2,q:"Which function fills missing values with a specified value?",opts:["df.replace_na()","df.fill()","df.fillna()","df.impute()"],ans:2,exp:"`df.fillna(value)` replaces all NaN entries with the specified value."},
-  {u:2,q:"What does `df.describe()` provide?",opts:["Column data types","Summary statistics (count, mean, std, min, max, quartiles)","First 5 rows of data","Number of missing values"],ans:1,exp:"`df.describe()` generates descriptive statistics including count, mean, std, min, max, and quartiles."},
-  {u:2,q:"Which Pandas method is used to group data by a column?",opts:["df.sort_by()","df.groupby()","df.cluster()","df.partition()"],ans:1,exp:"`df.groupby('col')` splits data into groups based on column values, enabling aggregation operations."},
-  {u:2,q:"What does vectorized computation mean in NumPy?",opts:["Using for loops on arrays","Performing operations element-wise on entire arrays without explicit loops","Storing data in vectors","Converting data to vectors"],ans:1,exp:"Vectorized operations apply functions to entire arrays at once without Python loops, making them much faster."},
-  {u:2,q:"How do you select a column named 'Age' from DataFrame `df`?",opts:["df.Age","df['Age']","Both A and B","df.get('Age')"],ans:2,exp:"Both `df.Age` (dot notation) and `df['Age']` (bracket notation) work to select a column. Both A and B is correct."},
-  {u:2,q:"Which function merges two DataFrames on a common key?",opts:["pd.combine()","pd.concat()","pd.merge()","pd.join_tables()"],ans:2,exp:"`pd.merge(df1, df2, on='key')` merges DataFrames similar to SQL JOINs based on a common column."},
-  {u:2,q:"What does `pd.concat([df1, df2])` do?",opts:["Merges on a key column","Concatenates DataFrames along an axis (stacking rows/columns)","Joins on index","Computes element-wise sum"],ans:1,exp:"`pd.concat()` concatenates DataFrames by stacking them along a specified axis (default: rows)."},
-  {u:2,q:"What is hierarchical indexing in Pandas called?",opts:["MultiIndex","SubIndex","NestedIndex","LayerIndex"],ans:0,exp:"Pandas MultiIndex (hierarchical indexing) allows multiple levels of indexing on a single axis."},
-  {u:2,q:"What does `df.pivot_table()` do?",opts:["Rotates the entire DataFrame 90°","Creates a spreadsheet-style pivot table with aggregation","Converts columns to rows","Removes duplicate rows"],ans:1,exp:"`df.pivot_table()` creates a summary table by aggregating values grouped by specified row/column labels."},
-  {u:2,q:"Which method sorts a DataFrame by a specific column?",opts:["df.order_by()","df.sort_values()","df.arrange()","df.rank()"],ans:1,exp:"`df.sort_values('col')` sorts the DataFrame by the specified column in ascending order by default."},
-  {u:2,q:"What does the `str.replace()` method do on a Pandas Series?",opts:["Replaces entire column values","Replaces substrings within string values","Deletes matching rows","Converts strings to integers"],ans:1,exp:"`Series.str.replace(old, new)` replaces occurrences of a substring within each string element."},
-  {u:2,q:"Which method gives the data types of all columns in a DataFrame?",opts:["df.info()","df.dtypes","df.types()","Both A and B"],ans:3,exp:"Both `df.dtypes` (returns Series of dtype per column) and `df.info()` display column data types."},
-  {u:2,q:"How do you write a DataFrame to a CSV file?",opts:["df.save_csv('file.csv')","df.to_csv('file.csv')","df.export('file.csv')","df.write_csv('file.csv')"],ans:1,exp:"`df.to_csv('filename.csv')` writes the DataFrame to a CSV file. Use `index=False` to skip row numbers."},
-  {u:2,q:"What does `df.shape` return?",opts:["Column names","Row count only","A tuple of (rows, columns)","Memory size of the DataFrame"],ans:2,exp:"`df.shape` returns a tuple `(number_of_rows, number_of_columns)` — the dimensions of the DataFrame."},
-  {u:2,q:"Which aggregation function calculates the mean in a groupby operation?",opts:[".sum()",".mean()",".count()",".avg()"],ans:1,exp:"`.mean()` calculates the arithmetic mean of numeric values within each group after `groupby()`."},
-  {u:2,q:"What is data wrangling?",opts:["Visualizing data using charts","The process of cleaning, transforming, and preparing raw data for analysis","Writing SQL queries","Loading data from databases"],ans:1,exp:"Data wrangling (munging) is the process of cleaning, transforming, and mapping raw data into a suitable format for analysis."},
-  {u:2,q:"Which method removes duplicate rows in a DataFrame?",opts:["df.unique()","df.drop_duplicates()","df.remove_dup()","df.deduplicate()"],ans:1,exp:"`df.drop_duplicates()` removes duplicate rows, keeping the first occurrence by default."},
-  {u:2,q:"How do you rename columns in Pandas?",opts:["df.change_columns()","df.rename(columns={...})","df.relabel()","df.columns.update()"],ans:1,exp:"`df.rename(columns={'old_name': 'new_name'})` renames specified columns in a DataFrame."},
-  {u:2,q:"What does `df.melt()` do?",opts:["Sorts the DataFrame","Converts wide-format data to long-format (unpivots)","Merges two DataFrames","Removes NaN values"],ans:1,exp:"`df.melt()` unpivots a DataFrame from wide format to long format, useful for data reshaping."},
-  {u:2,q:"Which Pandas function reads an Excel file?",opts:["pd.read_excel()","pd.load_excel()","pd.open_excel()","pd.import_excel()"],ans:0,exp:"`pd.read_excel('file.xlsx')` reads an Excel file into a Pandas DataFrame."},
-  {u:2,q:"What does `df.loc[]` do?",opts:["Selects by integer position","Selects by label/index name","Filters by condition only","Selects random rows"],ans:1,exp:"`df.loc[]` is label-based indexing — it selects rows and columns using their names/labels."},
-  {u:2,q:"What does `df.iloc[]` do?",opts:["Selects by label/index name","Selects by integer position","Selects using SQL-like syntax","Selects by boolean mask"],ans:1,exp:"`df.iloc[]` is integer-position based indexing — it selects rows/columns by their numeric position."},
-  {u:2,q:"Which method applies a function to each element of a DataFrame?",opts:["df.map()","df.applymap() / df.map()","df.transform()","df.execute()"],ans:1,exp:"`df.applymap()` (deprecated in newer Pandas, replaced by `df.map()`) applies a function element-wise."},
-  {u:2,q:"What is the difference between `inner` and `outer` join in `pd.merge()`?",opts:["Inner keeps all rows; outer keeps only matching rows","Inner keeps only matching rows; outer keeps all rows from both DataFrames","They produce identical results","Outer keeps rows only from the left DataFrame"],ans:1,exp:"INNER join returns only matching rows; OUTER join returns all rows from both DataFrames, filling unmatched with NaN."},
-  {u:2,q:"Which method computes the correlation matrix of a DataFrame?",opts:["df.covariance()","df.corr()","df.correlation()","df.relate()"],ans:1,exp:"`df.corr()` computes pairwise correlation of columns, useful for identifying linear relationships."},
+  {u:1,q:"Which operator returns the remainder after division in Python?",opts:["//","%","**",">>"],ans:1,exp:"The `%` (modulus) operator returns the remainder when one number is divided by another."},
+  {u:1,q:"A z-score tells us:",opts:["The frequency of a value","How many standard deviations a value is from the mean","The median of a dataset","The interquartile range"],ans:1,exp:"Z-score standardizes a value by showing its distance from the mean in standard deviation units."},
+  {u:1,q:"Which Python keyword defines a function?",opts:["func","define","def","function"],ans:2,exp:"Python uses `def` to define a function, e.g., `def my_function():`."},
+  {u:1,q:"Which visualization library creates interactive hover/zoom plots?",opts:["Matplotlib","Seaborn","Plotly","NumPy"],ans:2,exp:"Plotly creates interactive visualizations with hover tooltips, zoom, and pan features."},
+  {u:1,q:"Which of these correctly installs a Python library?",opts:["install pandas","python get pandas","pip install pandas","get-pip pandas"],ans:2,exp:"`pip install <library>` is the standard command to install Python packages from PyPI."},
+
+  // ── UNIT II — 20 Questions: Data Manipulation with Pandas ──
+  {u:2,q:"NumPy stands for:",opts:["New Python","Numerical Python","Next Python","Network Python"],ans:1,exp:"NumPy stands for Numerical Python — the core library for array-based numerical computation."},
+  {u:2,q:"Which Pandas structure is a one-dimensional labeled array?",opts:["DataFrame","Array","Series","Matrix"],ans:2,exp:"A Pandas Series is a 1D labeled array that can hold any data type."},
+  {u:2,q:"How do you import Pandas conventionally?",opts:["import pandas","import pd","import pandas as pd","from pandas import all"],ans:2,exp:"`import pandas as pd` is the standard convention, making pd the alias for all pandas functions."},
+  {u:2,q:"Which function reads a CSV file into a DataFrame?",opts:["pd.load_csv()","pd.read_csv()","pd.open_csv()","pd.import_csv()"],ans:1,exp:"`pd.read_csv('file.csv')` loads a CSV file into a Pandas DataFrame."},
+  {u:2,q:"What does `df.head()` return by default?",opts:["Last 5 rows","First 10 rows","First 5 rows","Column names only"],ans:2,exp:"`df.head()` returns the first 5 rows. Use `df.head(n)` for a custom number."},
+  {u:2,q:"Which method checks for missing values in a DataFrame?",opts:["df.missing()","df.isnull()","df.na_check()","df.checkna()"],ans:1,exp:"`df.isnull()` returns a boolean DataFrame: True wherever values are NaN/missing."},
+  {u:2,q:"How do you remove rows with missing values?",opts:["df.remove_na()","df.drop_missing()","df.dropna()","df.clean()"],ans:2,exp:"`df.dropna()` removes all rows containing at least one NaN value."},
+  {u:2,q:"Which method fills missing values with a specified replacement?",opts:["df.replace_na()","df.fill()","df.fillna()","df.impute()"],ans:2,exp:"`df.fillna(value)` replaces all NaN entries with the given value."},
+  {u:2,q:"What does `df.describe()` provide?",opts:["Column data types","Summary statistics (count, mean, std, min, max, quartiles)","First 5 rows","Number of missing values"],ans:1,exp:"`df.describe()` generates summary statistics: count, mean, std, min, quartiles, and max."},
+  {u:2,q:"Which method groups data by a column for aggregation?",opts:["df.sort_by()","df.groupby()","df.cluster()","df.partition()"],ans:1,exp:"`df.groupby('col')` splits data into groups based on column values for aggregation."},
+  {u:2,q:"What does `pd.merge(df1, df2, on='key')` do?",opts:["Stacks rows vertically","Merges DataFrames like a SQL JOIN on a common column","Renames columns","Removes duplicates"],ans:1,exp:"`pd.merge()` joins two DataFrames on a common key column, similar to SQL JOIN operations."},
+  {u:2,q:"What does `pd.concat([df1, df2])` do?",opts:["Merges on a key column","Concatenates DataFrames by stacking rows or columns","Joins on index","Computes element-wise sum"],ans:1,exp:"`pd.concat()` stacks DataFrames along a specified axis (default: rows)."},
+  {u:2,q:"What is hierarchical indexing in Pandas called?",opts:["MultiIndex","SubIndex","NestedIndex","LayerIndex"],ans:0,exp:"Pandas MultiIndex allows multiple levels of row/column indexing on a single axis."},
+  {u:2,q:"What does `df.melt()` do?",opts:["Sorts DataFrame","Converts wide-format to long-format (unpivots)","Merges DataFrames","Removes NaN values"],ans:1,exp:"`df.melt()` transforms a wide DataFrame into a long format — unpivoting selected columns."},
+  {u:2,q:"What does `df.loc[]` select?",opts:["By integer position","By label/index name","By boolean mask only","Random rows"],ans:1,exp:"`df.loc[]` is label-based — it selects rows and columns using their names/labels."},
+  {u:2,q:"What does `df.iloc[]` select?",opts:["By label name","By integer position","By SQL-like syntax","By boolean condition"],ans:1,exp:"`df.iloc[]` is integer-position based — it selects rows/columns by their numeric index."},
+  {u:2,q:"Which method removes duplicate rows?",opts:["df.unique()","df.drop_duplicates()","df.remove_dup()","df.deduplicate()"],ans:1,exp:"`df.drop_duplicates()` removes duplicate rows, keeping the first occurrence by default."},
+  {u:2,q:"What does `df.shape` return?",opts:["Column names","Row count only","A tuple (rows, columns)","Memory size"],ans:2,exp:"`df.shape` returns a tuple `(number_of_rows, number_of_columns)`."},
+  {u:2,q:"What is the difference between inner and outer join in `pd.merge()`?",opts:["Inner keeps all rows; outer keeps only matching","Inner keeps only matching rows; outer keeps all rows from both","They are identical","Outer keeps only left DataFrame rows"],ans:1,exp:"INNER join returns only matching rows; OUTER (full) join returns all rows, filling unmatched with NaN."},
+  {u:2,q:"Which method computes the pairwise correlation between columns?",opts:["df.covariance()","df.corr()","df.correlation()","df.relate()"],ans:1,exp:"`df.corr()` computes the pairwise correlation coefficient between all numeric columns."},
+
+  // ── UNIT III — 20 Questions: Matplotlib & Visualization ──
   {u:3,q:"Jupyter Notebook files are saved with which extension?",opts:[".py",".ipynb",".jnb",".nb"],ans:1,exp:"Jupyter Notebooks are saved as `.ipynb` (Interactive Python Notebook) files in JSON format."},
-  {u:3,q:"Which magic command runs a Python script in Jupyter Notebook?",opts:["%run","%exec","%load","%start"],ans:0,exp:"`%run script.py` executes a Python script file directly within a Jupyter Notebook cell."},
-  {u:3,q:"What is the correct way to import Matplotlib for plotting?",opts:["import matplotlib","import matplotlib.pyplot","import matplotlib.pyplot as plt","from matplotlib import plot"],ans:2,exp:"The standard convention is `import matplotlib.pyplot as plt`, making all plot functions accessible via `plt`."},
-  {u:3,q:"Which function creates a line plot in Matplotlib?",opts:["plt.line()","plt.lineplot()","plt.plot()","plt.draw()"],ans:2,exp:"`plt.plot(x, y)` creates a line plot. It's the most fundamental Matplotlib plotting function."},
-  {u:3,q:"Which function creates a bar chart in Matplotlib?",opts:["plt.bar_chart()","plt.bar()","plt.column()","plt.barchart()"],ans:1,exp:"`plt.bar(x, height)` creates a vertical bar chart. `plt.barh()` creates a horizontal bar chart."},
-  {u:3,q:"Which function creates a histogram in Matplotlib?",opts:["plt.hist()","plt.histogram()","plt.distplot()","plt.freq()"],ans:0,exp:"`plt.hist(data, bins=n)` creates a histogram showing the frequency distribution of data."},
-  {u:3,q:"What does `plt.show()` do?",opts:["Saves the figure to a file","Displays the rendered plot on screen","Clears the current figure","Closes the plot window"],ans:1,exp:"`plt.show()` renders and displays the currently built plot to the screen or notebook output."},
-  {u:3,q:"How do you add a title to a Matplotlib plot?",opts:["plt.heading('title')","plt.label('title')","plt.title('title')","plt.add_title('title')"],ans:2,exp:"`plt.title('Your Title')` adds a title above the plot area."},
+  {u:3,q:"Which magic command runs a Python script inside Jupyter?",opts:["%run","%exec","%load","%start"],ans:0,exp:"`%run script.py` executes a Python script file directly within a Jupyter Notebook cell."},
+  {u:3,q:"What is the standard import convention for Matplotlib?",opts:["import matplotlib","import matplotlib.pyplot","import matplotlib.pyplot as plt","from matplotlib import plot"],ans:2,exp:"The convention is `import matplotlib.pyplot as plt`, giving access to all plot functions via `plt`."},
+  {u:3,q:"Which function creates a line plot in Matplotlib?",opts:["plt.line()","plt.lineplot()","plt.plot()","plt.draw()"],ans:2,exp:"`plt.plot(x, y)` creates a line plot — the most fundamental Matplotlib plotting function."},
+  {u:3,q:"Which function creates a bar chart in Matplotlib?",opts:["plt.bar_chart()","plt.bar()","plt.column()","plt.barchart()"],ans:1,exp:"`plt.bar(x, height)` creates a vertical bar chart. Use `plt.barh()` for horizontal bars."},
+  {u:3,q:"Which function creates a histogram?",opts:["plt.hist()","plt.histogram()","plt.distplot()","plt.freq()"],ans:0,exp:"`plt.hist(data, bins=n)` creates a histogram showing the frequency distribution of data."},
+  {u:3,q:"How do you create a scatter plot in Matplotlib?",opts:["plt.scatter(x, y)","plt.points(x, y)","plt.dot(x, y)","plt.plot_scatter(x, y)"],ans:0,exp:"`plt.scatter(x, y)` creates a scatter plot displaying individual data points as markers."},
+  {u:3,q:"Which function creates subplots in Matplotlib?",opts:["plt.subplot_grid()","plt.make_subplots()","plt.subplots()","plt.grid_plot()"],ans:2,exp:"`fig, axes = plt.subplots(rows, cols)` creates a figure with a grid of subplot axes."},
+  {u:3,q:"What is a Waffle Chart used for?",opts:["Showing correlation","Visualizing part-to-whole relationships using a grid of squares","Plotting time series","Showing continuous distributions"],ans:1,exp:"Waffle charts use colored grid squares to display proportional/part-to-whole data engagingly."},
+  {u:3,q:"Which library is specifically designed for Waffle Charts?",opts:["Matplotlib","pywaffle","Seaborn","Plotly"],ans:1,exp:"The `pywaffle` library extends Matplotlib to create waffle charts using the `Waffle` figure class."},
+  {u:3,q:"What does `plt.tight_layout()` do?",opts:["Increases plot size","Adjusts subplot spacing to prevent overlap","Adds grid lines","Resets the figure"],ans:1,exp:"`plt.tight_layout()` automatically adjusts subplot parameters so subplots don't overlap."},
+  {u:3,q:"What does the `alpha` parameter control in Matplotlib?",opts:["Axis angle","Font size","Transparency/opacity of plot elements","Color saturation"],ans:2,exp:"`alpha` ranges from 0 (transparent) to 1 (opaque), controlling element transparency."},
   {u:3,q:"Which function adds a label to the x-axis?",opts:["plt.x_label()","plt.xlabel()","plt.label_x()","plt.axis_label('x')"],ans:1,exp:"`plt.xlabel('Label')` sets the label for the x-axis of the current plot."},
-  {u:3,q:"How do you create a scatter plot in Matplotlib?",opts:["plt.scatter(x, y)","plt.points(x, y)","plt.dot(x, y)","plt.plot_scatter(x, y)"],ans:0,exp:"`plt.scatter(x, y)` creates a scatter plot, displaying individual data points as markers."},
-  {u:3,q:"What does `plt.legend()` do?",opts:["Sets the axis limits","Displays a legend box showing what each line/color represents","Adds grid lines","Removes axes"],ans:1,exp:"`plt.legend()` displays a legend that identifies the different data series in a plot."},
-  {u:3,q:"What is a subplot in Matplotlib?",opts:["A type of bar chart","Multiple plots arranged in a single figure","A plot with two y-axes","A zoomed-in section of a plot"],ans:1,exp:"Subplots allow multiple axes/plots to be placed in a grid layout within a single figure."},
-  {u:3,q:"Which function creates subplots in Matplotlib?",opts:["plt.subplot_grid()","plt.make_subplots()","plt.subplots()","plt.grid_plot()"],ans:2,exp:"`fig, axes = plt.subplots(rows, cols)` creates a figure with a grid of subplots."},
-  {u:3,q:"What is a Waffle Chart used for?",opts:["Showing correlation between variables","Visualizing part-to-whole relationships using a grid of squares","Plotting time series data","Showing distribution of continuous data"],ans:1,exp:"Waffle charts use a grid of colored squares to display proportional/part-to-whole relationships in an engaging way."},
-  {u:3,q:"Which Python library is specifically designed to create Waffle Charts?",opts:["Matplotlib","pywaffle","Seaborn","Plotly"],ans:1,exp:"The `pywaffle` library extends Matplotlib to create waffle charts easily using the `Waffle` figure class."},
-  {u:3,q:"What does `plt.savefig('plot.png')` do?",opts:["Loads a plot from file","Saves the current figure to a file","Displays the plot","Exports data to CSV"],ans:1,exp:"`plt.savefig('filename.png')` saves the current figure to a file in the specified format (png, pdf, svg, etc.)."},
-  {u:3,q:"Which parameter controls the number of bins in `plt.hist()`?",opts:["size","count","bins","intervals"],ans:2,exp:"The `bins` parameter in `plt.hist(data, bins=20)` controls how many intervals the data is divided into."},
-  {u:3,q:"What is the purpose of `plt.tight_layout()`?",opts:["Increases plot size","Adjusts spacing between subplots to prevent overlap","Adds grid lines","Resets the figure"],ans:1,exp:"`plt.tight_layout()` automatically adjusts subplot parameters so subplots don't overlap each other."},
-  {u:3,q:"What does `plt.grid(True)` do?",opts:["Creates a subplot grid","Adds grid lines to the plot background","Makes the plot interactive","Changes the plot style"],ans:1,exp:"`plt.grid(True)` adds a grid of horizontal and vertical lines to the plot for easier reading of values."},
-  {u:3,q:"Which parameter in `plt.plot()` changes line style to dashed?",opts:["line='--'","style='dashed'","linestyle='--'","ls='dashed'"],ans:2,exp:"The `linestyle='--'` (or `ls='--'`) parameter in `plt.plot()` renders the line as a dashed pattern."},
-  {u:3,q:"What does `figsize=(10, 6)` control in Matplotlib?",opts:["Font size","DPI resolution","Width and height of the figure in inches","Number of subplots"],ans:2,exp:"`figsize=(width, height)` in `plt.figure()` or `plt.subplots()` sets the figure dimensions in inches."},
-  {u:3,q:"Which Matplotlib function creates a pie chart?",opts:["plt.pie_chart()","plt.circle()","plt.pie()","plt.donut()"],ans:2,exp:"`plt.pie(values, labels=labels)` creates a pie chart showing proportional data."},
-  {u:3,q:"What is the Matplotlib object-oriented (OO) approach?",opts:["Using only plt.functions","Creating Figure and Axes objects explicitly for more control","Using Seaborn instead of Matplotlib","Automating plot generation"],ans:1,exp:"The OO approach creates `fig, ax = plt.subplots()` and calls methods on `ax` directly for greater flexibility."},
-  {u:3,q:"Which function adds a horizontal line to a plot in Matplotlib?",opts:["plt.hline()","plt.axhline()","plt.horizontal()","plt.h_line()"],ans:1,exp:"`plt.axhline(y=value)` draws a horizontal line spanning the full width of the plot at the specified y-value."},
-  {u:3,q:"What does the `alpha` parameter control in Matplotlib plots?",opts:["Axis angle","Font size","Transparency/opacity of plot elements","Color saturation"],ans:2,exp:"The `alpha` parameter (0 to 1) controls the transparency of plot elements; 0 = fully transparent, 1 = fully opaque."},
-  {u:3,q:"Which Jupyter Notebook cell type executes Python code?",opts:["Markdown cell","Raw cell","Code cell","Text cell"],ans:2,exp:"Code cells in Jupyter Notebook contain Python code that can be executed, displaying output below the cell."},
-  {u:3,q:"How do you change the color of a line in `plt.plot()`?",opts:["plt.plot(x, y, shade='red')","plt.plot(x, y, color='red')","plt.plot(x, y, fill='red')","plt.plot(x, y, hue='red')"],ans:1,exp:"The `color` parameter (`color='red'` or `color='#ff0000'`) sets the line color in `plt.plot()`."},
-  {u:3,q:"What is the output of `np.arange(0, 10, 2)`?",opts:["[0,1,2,3,4,5,6,7,8,9]","[0,2,4,6,8]","[2,4,6,8,10]","[0,2,4,6,8,10]"],ans:1,exp:"`np.arange(start, stop, step)` generates [0,2,4,6,8] — it stops BEFORE 10, with step=2."},
-  {u:3,q:"Which function in NumPy creates an array of zeros?",opts:["np.empty()","np.zero()","np.zeros()","np.blank()"],ans:2,exp:"`np.zeros(shape)` creates an array filled with 0.0 values of the specified shape."},
-  {u:3,q:"What does `plt.style.use('ggplot')` do?",opts:["Imports ggplot library","Applies a pre-defined visual style to all subsequent plots","Creates a new subplot","Adds a grid"],ans:1,exp:"`plt.style.use('ggplot')` applies R's ggplot aesthetic style (gray background, colored gridlines) to Matplotlib plots."},
-  {u:3,q:"How do you add text annotation to a specific point on a Matplotlib plot?",opts:["plt.text() or plt.annotate()","plt.label_point()","plt.add_text()","plt.mark()"],ans:0,exp:"Both `plt.text(x, y, 'string')` and `plt.annotate('text', xy=(x,y))` add text annotations to specific plot coordinates."},
-  {u:3,q:"What does the `marker` parameter do in `plt.plot()`?",opts:["Changes line color","Sets the line thickness","Adds symbols at data points","Adds axis labels"],ans:2,exp:"The `marker` parameter (e.g., `marker='o'` for circles, `marker='s'` for squares) adds symbols at each data point."},
-  {u:3,q:"Which Matplotlib function creates a box plot?",opts:["plt.box()","plt.boxplot()","plt.whisker()","plt.quartile()"],ans:1,exp:"`plt.boxplot(data)` creates a box-and-whisker plot showing median, quartiles, and outliers."},
-  {u:3,q:"What is the default figure size in Matplotlib (in inches)?",opts:["(8, 6)","(10, 8)","(6.4, 4.8)","(12, 8)"],ans:2,exp:"Matplotlib's default figure size is (6.4, 4.8) inches, set by `rcParams['figure.figsize']`."},
+  {u:3,q:"Which parameter in `plt.plot()` makes the line dashed?",opts:["line='--'","style='dashed'","linestyle='--'","ls='dashed'"],ans:2,exp:"`linestyle='--'` (or `ls='--'`) renders the line as dashed in `plt.plot()`."},
+  {u:3,q:"What does `figsize=(10, 6)` control?",opts:["Font size","DPI resolution","Width and height of the figure in inches","Number of subplots"],ans:2,exp:"`figsize=(width, height)` sets the figure dimensions in inches when creating a plot."},
+  {u:3,q:"What is the Matplotlib object-oriented (OO) approach?",opts:["Using only plt.functions","Creating Figure and Axes objects explicitly for more control","Using Seaborn instead","Automating plot generation"],ans:1,exp:"The OO approach creates `fig, ax = plt.subplots()` and calls methods on `ax` for greater flexibility."},
+  {u:3,q:"Which function creates a pie chart?",opts:["plt.pie_chart()","plt.circle()","plt.pie()","plt.donut()"],ans:2,exp:"`plt.pie(values, labels=labels)` creates a pie chart showing proportional data."},
+  {u:3,q:"Which function creates a box plot?",opts:["plt.box()","plt.boxplot()","plt.whisker()","plt.quartile()"],ans:1,exp:"`plt.boxplot(data)` creates a box-and-whisker plot showing median, quartiles, and outliers."},
+  {u:3,q:"What is the output of `np.arange(0, 10, 2)`?",opts:["[0,1,2,3,4,5,6,7,8,9]","[0,2,4,6,8]","[2,4,6,8,10]","[0,2,4,6,8,10]"],ans:1,exp:"`np.arange(start, stop, step)` generates [0,2,4,6,8] — stops BEFORE 10, step=2."},
+  {u:3,q:"What does `plt.grid(True)` do?",opts:["Creates a subplot grid","Adds background grid lines to the plot","Makes the plot interactive","Changes the plot style"],ans:1,exp:"`plt.grid(True)` adds horizontal and vertical grid lines for easier value reading."},
 ];
 
-let answered={},currentUnit=null;
+let answered={},currentUnit=null,pendingUnit=null,playerName='Anonymous';
 const UM={
   'all':{label:'🌐 All Units · Full Test',color:'var(--text)',Q:()=>questions},
   1:{label:'📊 Unit I · Stats & Python',color:'var(--lime)',Q:()=>questions.filter(q=>q.u===1)},
@@ -467,6 +520,89 @@ const UM={
 };
 const getQ=()=>UM[currentUnit].Q();
 
+/* ── MODAL ── */
+function openModal(unit){
+  pendingUnit=unit;
+  document.getElementById('playerNameInput').value='';
+  document.getElementById('nameModal').classList.add('show');
+  setTimeout(()=>document.getElementById('playerNameInput').focus(),300);
+}
+function closeModal(){
+  document.getElementById('nameModal').classList.remove('show');
+  pendingUnit=null;
+}
+function startWithName(){
+  const v=document.getElementById('playerNameInput').value.trim();
+  if(!v){document.getElementById('playerNameInput').focus();
+    document.getElementById('playerNameInput').style.borderColor='var(--red)';
+    setTimeout(()=>document.getElementById('playerNameInput').style.borderColor='',1500);return;}
+  playerName=v;
+  document.getElementById('nameModal').classList.remove('show');
+  selectUnit(pendingUnit);
+}
+
+/* ── STORAGE HELPERS ── */
+async function saveScore(entry){
+  try{
+    const key='scores:'+Date.now();
+    await window.storage.set(key,JSON.stringify(entry));
+  }catch(e){console.warn('Storage save failed:',e)}
+}
+async function loadScores(){
+  try{
+    const res=await window.storage.list('scores:');
+    if(!res||!res.keys||!res.keys.length) return [];
+    const scores=[];
+    for(const k of res.keys){
+      try{const r=await window.storage.get(k);if(r)scores.push(JSON.parse(r.value));}catch(e){}
+    }
+    return scores.sort((a,b)=>b.pct-a.pct);
+  }catch(e){return []}
+}
+async function clearLeaderboard(){
+  if(!confirm('Clear all leaderboard scores?')) return;
+  try{
+    const res=await window.storage.list('scores:');
+    if(res&&res.keys) for(const k of res.keys) await window.storage.delete(k);
+    renderLeaderboard([]);toast('🗑 Leaderboard cleared!');
+  }catch(e){toast('Could not clear — storage unavailable')}
+}
+
+/* ── RENDER LEADERBOARD ── */
+function renderLeaderboard(scores){
+  const body=document.getElementById('lbBody');
+  if(!scores.length){
+    body.innerHTML='<div class="lb-empty">🎯 No scores yet — be the first to play!</div>';return;
+  }
+  const unitLabel={'all':'ALL',1:'U-I',2:'U-II',3:'U-III'};
+  const unitCls={'all':'ua',1:'u1',2:'u2',3:'u3'};
+  const medals=['r1','r2','r3'];
+  body.innerHTML=scores.slice(0,20).map((s,i)=>{
+    const rank=i<3?`<span class="lb-rank ${medals[i]}">${['🥇','🥈','🥉'][i]}</span>`
+                  :`<span class="lb-rank" style="color:var(--muted2)">${i+1}</span>`;
+    const rowCls=i===0?' gold':i===1?' silver':i===2?' bronze':'';
+    return `<div class="lb-row${rowCls}">
+      ${rank}
+      <span class="lb-name">${esc(s.name)}</span>
+      <span><span class="lb-unit ${unitCls[s.unit]}">${unitLabel[s.unit]}</span></span>
+      <span class="lb-score">${s.pct}%</span>
+      <span class="lb-grade" style="color:${gradeColor(s.grade)}">${s.grade}</span>
+      <span class="lb-date">${s.date}</span>
+    </div>`;
+  }).join('');
+}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function gradeColor(g){
+  const m={A:'#facc15','A+':'#facc15',A:'#a3e635','B+':'#4ade80',B:'#86efac',C:'#bef264',D:'#fbbf24',F:'#f87171'};
+  return m[g]||'var(--muted2)';
+}
+async function refreshLeaderboard(){
+  document.getElementById('lbBody').innerHTML='<div class="lb-loading">Loading scores...</div>';
+  const scores=await loadScores();
+  renderLeaderboard(scores);
+}
+
+/* ── UNIT SELECTION ── */
 function selectUnit(u){
   currentUnit=u;answered={};
   document.getElementById('welcomeScreen').style.display='none';
@@ -484,6 +620,7 @@ function goHome(){
   document.getElementById('scoreBar').style.display='none';
   document.getElementById('resultsPanel').classList.remove('show');
   document.getElementById('questionsContainer').innerHTML='';
+  refreshLeaderboard();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -557,9 +694,9 @@ function showResults(){
   document.getElementById('rWrong').textContent=wro;
   document.getElementById('rPct').textContent=pct+'%';
   document.getElementById('rSkipped').textContent=skip;
-  const ud=[{ids:[...Array(33).keys()],b:'u1bar',s:'u1stat'},
-    {ids:[...Array(33).keys()].map(i=>i+33),b:'u2bar',s:'u2stat'},
-    {ids:[...Array(34).keys()].map(i=>i+66),b:'u3bar',s:'u3stat'}];
+  const ud=[{ids:[...Array(20).keys()],b:'u1bar',s:'u1stat'},
+    {ids:[...Array(20).keys()].map(i=>i+20),b:'u2bar',s:'u2stat'},
+    {ids:[...Array(20).keys()].map(i=>i+40),b:'u3bar',s:'u3stat'}];
   ud.forEach(u=>{
     const rel=u.ids.filter(i=>i<questions.length),c=rel.filter(i=>answered[i]===questions[i].ans);
     const p=rel.length?Math.round(c.length/rel.length*100):0;
@@ -574,6 +711,12 @@ function showResults(){
   });
   const rp=document.getElementById('resultsPanel');
   rp.classList.add('show');rp.scrollIntoView({behavior:'smooth',block:'center'});
+
+  // Save to leaderboard DB
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'});
+  const entry={name:playerName,pct,score:cor+'/'+total,grade:lg,unit:currentUnit,date:dateStr,ts:Date.now()};
+  saveScore(entry);
 }
 function retryWhole(){
   answered={};document.getElementById('resultsPanel').classList.remove('show');
@@ -597,6 +740,7 @@ function toast(msg){
 window.onload=()=>{
   document.getElementById('scoreBar').style.display='none';
   document.getElementById('welcomeScreen').style.cssText='display:flex;flex-direction:column;align-items:center';
+  refreshLeaderboard();
 };
 </script>
 </body>
