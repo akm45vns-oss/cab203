@@ -375,6 +375,17 @@ h1.htitle .hl{background:linear-gradient(135deg,var(--lime) 0%,var(--green) 50%,
 
   <!-- LEADERBOARD -->
   <div class="lb-section">
+    <!-- Firebase Setup Banner (hidden until needed) -->
+    <div id="firebaseSetup" style="display:none;margin-bottom:16px;padding:18px 22px;border-radius:14px;background:rgba(250,204,21,0.07);border:1px solid rgba(250,204,21,0.25)">
+      <div style="font-size:.88rem;font-weight:700;color:var(--yellow);margin-bottom:8px">⚙️ One-time Firebase Setup Required for Global Leaderboard</div>
+      <div style="font-size:.78rem;color:var(--muted2);line-height:1.8">
+        <b style="color:var(--text)">Step 1.</b> Go to <a href="https://console.firebase.google.com" target="_blank" style="color:var(--lime)">console.firebase.google.com</a> → Create a free project<br>
+        <b style="color:var(--text)">Step 2.</b> Click <b style="color:var(--text)">Build → Realtime Database → Create database</b> → choose <b style="color:var(--text)">"Test mode"</b><br>
+        <b style="color:var(--text)">Step 3.</b> Copy the URL shown (e.g. <code style="color:var(--lime);font-size:.75rem">https://your-project-default-rtdb.firebaseio.com</code>)<br>
+        <b style="color:var(--text)">Step 4.</b> Open this HTML file → find <code style="color:var(--lime);font-size:.75rem">PASTE_YOUR_FIREBASE_URL_HERE</code> → replace it → save &amp; redeploy
+      </div>
+      <div style="font-size:.72rem;color:var(--muted2);margin-top:8px">Until then, scores are saved locally on this device only.</div>
+    </div>
     <div class="lb-header">
       <div>
         <div class="lb-title">🏆 &nbsp;Global Leaderboard</div>
@@ -549,83 +560,146 @@ function startWithName(){
   selectUnit(pendingUnit);
 }
 
-/* ══════════════════════════════════════════════
-   GLOBAL LEADERBOARD — JSONStore.io
-   ✅ Free · No signup · No API key · Cross-device
-   All players share the same token URL
-   ══════════════════════════════════════════════ */
-const DB = 'https://www.jsonstore.io/dataviz-mcq-ayush-leaderboard-2025';
+/* ══════════════════════════════════════════════════
+   GLOBAL LEADERBOARD — Firebase Realtime Database
+   ✅ Free · Real-time · Cross-device · No CORS issues
+   
+   SETUP (5 minutes, one-time):
+   1. Go to https://console.firebase.google.com
+   2. Click "Add project" → name it anything
+   3. Click "Realtime Database" → Create database
+   4. Choose "Start in test mode" → Enable
+   5. Copy the database URL (looks like:
+      https://YOUR-PROJECT-default-rtdb.firebaseio.com)
+   6. Paste it below replacing PASTE_YOUR_FIREBASE_URL_HERE
+   ════════════════════════════════════════════════════ */
+
+const FIREBASE_URL = 'https://quiz-3fbc0-default-rtdb.firebaseio.com';
+
+const isFirebaseConfigured = () => FIREBASE_URL && !FIREBASE_URL.includes('PASTE_YOUR');
 let dbOnline = false;
 
+/* ── FIREBASE REST API ── */
+async function fbPOST(path, data){
+  const res = await fetch(`${FIREBASE_URL}/${path}.json`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error(`Firebase POST failed: ${res.status}`);
+  return res.json();
+}
+async function fbGET(path){
+  const res = await fetch(`${FIREBASE_URL}/${path}.json`);
+  if (!res.ok) throw new Error(`Firebase GET failed: ${res.status}`);
+  return res.json();
+}
+async function fbDELETE(path){
+  const res = await fetch(`${FIREBASE_URL}/${path}.json`, { method: 'DELETE' });
+  if (!res.ok) throw new Error(`Firebase DELETE failed: ${res.status}`);
+}
+
+/* ── SAVE SCORE ── */
 async function saveScore(entry){
-  const id = 's' + Date.now() + Math.random().toString(36).slice(2,6);
+  // Always save to localStorage first (instant, no network needed)
   try{
-    const res = await fetch(`${DB}/scores/${id}`, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(entry)
-    });
-    if(!res.ok) throw new Error('write failed');
+    const local = JSON.parse(localStorage.getItem('dv_scores') || '[]');
+    local.push(entry);
+    localStorage.setItem('dv_scores', JSON.stringify(local));
+  }catch(_){}
+
+  if(!isFirebaseConfigured()){
+    showSetupBanner();
+    return;
+  }
+  try{
+    await fbPOST('scores', entry);
     dbOnline = true;
+    updateStatusBadge();
   }catch(e){
     dbOnline = false;
-    /* Fallback: localStorage so score isn't lost */
-    try{
-      const local = JSON.parse(localStorage.getItem('dv_scores')||'[]');
-      local.push(entry);
-      localStorage.setItem('dv_scores', JSON.stringify(local));
-    }catch(_){}
+    updateStatusBadge();
+    console.warn('Firebase write failed, saved locally:', e.message);
   }
 }
 
+/* ── LOAD SCORES ── */
 async function loadScores(){
+  if(!isFirebaseConfigured()){
+    showSetupBanner();
+    return localScores();
+  }
   try{
-    const res = await fetch(`${DB}/scores`);
-    if(!res.ok) throw new Error('read failed');
-    const json = await res.json();
+    const data = await fbGET('scores');
     dbOnline = true;
-    if(!json || !json.result || typeof json.result !== 'object') return localScores();
-    const arr = Object.values(json.result).filter(Boolean);
-    /* also merge any local-only scores saved during offline */
-    const merged = mergeWithLocal(arr);
-    return merged.sort((a,b) => b.pct - a.pct || a.ts - b.ts);
+    updateStatusBadge();
+    if(!data || typeof data !== 'object') return localScores();
+
+    // Firebase keys are auto-generated push IDs
+    const remote = Object.values(data).filter(Boolean);
+
+    // Merge any local-only scores (saved while offline)
+    const remoteTs = new Set(remote.map(s => s.ts));
+    const localOnly = localScores().filter(s => !remoteTs.has(s.ts));
+
+    // Upload local-only scores to Firebase now that we're online
+    for(const s of localOnly){
+      try{ await fbPOST('scores', s); }catch(_){}
+    }
+    if(localOnly.length) localStorage.removeItem('dv_scores');
+
+    return [...remote, ...localOnly].sort((a,b) => b.pct - a.pct || a.ts - b.ts);
   }catch(e){
     dbOnline = false;
+    updateStatusBadge();
+    console.warn('Firebase read failed:', e.message);
     return localScores();
   }
 }
 
 function localScores(){
   try{
-    return JSON.parse(localStorage.getItem('dv_scores')||'[]')
+    return JSON.parse(localStorage.getItem('dv_scores') || '[]')
       .sort((a,b) => b.pct - a.pct);
   }catch(_){ return []; }
 }
 
-function mergeWithLocal(remote){
-  try{
-    const local = JSON.parse(localStorage.getItem('dv_scores')||'[]');
-    if(!local.length) return remote;
-    /* push local-only scores not yet in remote */
-    const rts = new Set(remote.map(s=>s.ts));
-    const extra = local.filter(s => !rts.has(s.ts));
-    return [...remote, ...extra];
-  }catch(_){ return remote; }
-}
-
+/* ── CLEAR LEADERBOARD ── */
 async function clearLeaderboard(){
-  if(!confirm('⚠️ This will delete ALL global scores. Are you sure?')) return;
+  if(!confirm('⚠️ This will delete ALL scores for EVERY player globally. Are you sure?')) return;
   try{
-    await fetch(`${DB}/scores`, { method:'DELETE' });
+    if(isFirebaseConfigured()) await fbDELETE('scores');
     localStorage.removeItem('dv_scores');
     renderLeaderboard([]);
     toast('🗑 Leaderboard cleared!');
   }catch(e){
     localStorage.removeItem('dv_scores');
     renderLeaderboard([]);
-    toast('🗑 Local scores cleared (offline mode)');
+    toast('🗑 Local scores cleared');
   }
 }
+
+/* ── STATUS HELPERS ── */
+function updateStatusBadge(){
+  const badge = document.getElementById('lbStatusBadge');
+  if(!badge) return;
+  if(!isFirebaseConfigured()){
+    badge.textContent = '⚙️ Setup required — see below';
+    badge.style.color = 'var(--yellow)';
+  } else if(dbOnline){
+    badge.textContent = '🟢 Live · Synced globally';
+    badge.style.color = 'var(--correct)';
+  } else {
+    badge.textContent = '🟡 Firebase unreachable · Local only';
+    badge.style.color = 'var(--yellow)';
+  }
+}
+
+function showSetupBanner(){
+  const el = document.getElementById('firebaseSetup');
+  if(el) el.style.display = 'block';
+}
+
 
 /* ── RENDER LEADERBOARD ── */
 function renderLeaderboard(scores){
@@ -659,11 +733,7 @@ async function refreshLeaderboard(){
   document.getElementById('lbBody').innerHTML='<div class="lb-loading">⏳ Loading scores...</div>';
   const scores = await loadScores();
   renderLeaderboard(scores);
-  const badge = document.getElementById('lbStatusBadge');
-  if(badge){
-    badge.textContent = dbOnline ? '🟢 Live · All Devices Synced' : '🟡 Offline · Local Only';
-    badge.style.color  = dbOnline ? 'var(--correct)' : 'var(--yellow)';
-  }
+  updateStatusBadge();
 }
 
 /* ── UNIT SELECTION ── */
