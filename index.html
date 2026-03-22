@@ -3,1206 +3,600 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Visualization – 100 MCQ Quiz</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<title>DataViz MCQ — Ayush Kumar Maurya</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a120a;
-    --card: #101a10;
-    --border: #1e3a1e;
-    --accent: #a3e635;
-    --accent2: #facc15;
-    --accent3: #4ade80;
-    --correct: #22c55e;
-    --wrong: #f87171;
-    --text: #ecfccb;
-    --muted: #6b8f52;
-    --unit1: #a3e635;
-    --unit2: #4ade80;
-    --unit3: #facc15;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-  /* ── Cartoonish Background ── */
-  .bg-canvas {
-    position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
-  }
-  .doodle {
-    position: absolute;
-    opacity: 0.11;
-    animation: floaty 8s ease-in-out infinite;
-  }
-  .doodle:nth-child(2){animation-delay:-2s;animation-duration:11s}
-  .doodle:nth-child(3){animation-delay:-4s;animation-duration:9s}
-  .doodle:nth-child(4){animation-delay:-1s;animation-duration:13s}
-  .doodle:nth-child(5){animation-delay:-6s;animation-duration:10s}
-  .doodle:nth-child(6){animation-delay:-3s;animation-duration:14s}
-  .doodle:nth-child(7){animation-delay:-5s;animation-duration:12s}
-  .doodle:nth-child(8){animation-delay:-7s;animation-duration:9.5s}
-  .doodle:nth-child(9){animation-delay:-1.5s;animation-duration:11.5s}
-  .doodle:nth-child(10){animation-delay:-3.5s;animation-duration:10.5s}
-  @keyframes floaty {
-    0%,100%{transform:translateY(0px) rotate(0deg)}
-    33%{transform:translateY(-18px) rotate(6deg)}
-    66%{transform:translateY(10px) rotate(-4deg)}
-  }
-  .header,.hero,.questions-container,.results-panel,.toast{position:relative;z-index:1}
-  /* Header */
-  .header {
-    background: linear-gradient(135deg, #0a120a 0%, #0f1f0f 100%);
-    border-bottom: 1px solid var(--border);
-    padding: 24px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .logo { font-size: 1.1rem; font-weight: 800; letter-spacing: 2px; color: var(--accent); }
-  .logo span { color: var(--text); }
-  .score-bar {
-    display: flex; gap: 20px; align-items: center;
-  }
-  .score-chip {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.8rem;
-    padding: 6px 14px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: #132213;
-  }
-  .score-chip span { color: var(--accent); font-weight: 700; }
-  .progress-wrap {
-    width: 200px;
-    height: 4px;
-    background: var(--border);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--accent3));
-    border-radius: 4px;
-    transition: width 0.4s ease;
-    width: 0%;
-  }
-  /* Hero */
-  .hero {
-    text-align: center;
-    padding: 64px 24px 40px;
-  }
-  .hero h1 {
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    font-weight: 800;
-    line-height: 1.1;
-    margin-bottom: 12px;
-  }
-  .hero h1 em {
-    font-style: normal;
-    background: linear-gradient(90deg, var(--accent), var(--accent3));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .hero p { color: var(--muted); font-size: 1rem; margin-bottom: 32px; }
-  .unit-legend {
-    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
-    margin-bottom: 24px;
-  }
-  .unit-tag {
-    padding: 5px 14px; border-radius: 20px; font-size: 0.78rem;
-    font-weight: 600; letter-spacing: 1px; border: 1px solid;
-  }
-  .u1 { color: var(--unit1); border-color: var(--unit1); background: rgba(0,229,255,0.07); }
-  .u2 { color: var(--unit2); border-color: var(--unit2); background: rgba(167,139,250,0.07); }
-  .u3 { color: var(--unit3); border-color: var(--unit3); background: rgba(245,158,11,0.07); }
-  /* Controls */
-  .controls {
-    display: flex; justify-content: center; gap: 12px;
-    margin-bottom: 48px; flex-wrap: wrap;
-  }
-  .btn {
-    padding: 11px 26px; border-radius: 8px; font-family: 'Syne', sans-serif;
-    font-size: 0.88rem; font-weight: 700; cursor: pointer;
-    border: none; letter-spacing: 0.5px; transition: all 0.2s;
-  }
-  .btn-primary {
-    background: var(--accent); color: #0b0f1a;
-  }
-  .btn-primary:hover { background: #33eeff; transform: translateY(-1px); }
-  .btn-secondary {
-    background: transparent; color: var(--text); border: 1px solid var(--border);
-  }
-  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
-  .btn-danger {
-    background: transparent; color: var(--accent2); border: 1px solid var(--accent2);
-  }
-  .btn-danger:hover { background: rgba(255,107,107,0.1); }
-  /* Filter tabs */
-  .filter-bar {
-    display: flex; justify-content: center; gap: 8px; margin-bottom: 32px; flex-wrap: wrap;
-  }
-  .filter-btn {
-    padding: 7px 18px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
-    cursor: pointer; border: 1px solid var(--border); background: transparent;
-    color: var(--muted); transition: all 0.2s; font-family: 'Syne', sans-serif;
-    letter-spacing: 0.5px;
-  }
-  .filter-btn.active { color: var(--bg); }
-  .filter-btn.f-all.active { background: var(--text); border-color: var(--text); }
-  .filter-btn.f-u1.active { background: var(--unit1); border-color: var(--unit1); }
-  .filter-btn.f-u2.active { background: var(--unit2); border-color: var(--unit2); }
-  .filter-btn.f-u3.active { background: var(--unit3); border-color: var(--unit3); }
-  /* Questions Grid */
-  .questions-container {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 0 20px 80px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  .q-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-    transition: border-color 0.3s;
-    animation: fadeUp 0.4s ease both;
-  }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .q-card.answered-correct { border-color: var(--correct); }
-  .q-card.answered-wrong { border-color: var(--wrong); }
-  .q-header {
-    display: flex; align-items: flex-start; gap: 14px;
-    padding: 20px 22px 14px;
-  }
-  .q-num {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.72rem; font-weight: 700;
-    color: var(--bg);
-    padding: 4px 9px; border-radius: 6px; white-space: nowrap;
-    margin-top: 2px;
-  }
-  .q-num.u1 { background: var(--unit1); }
-  .q-num.u2 { background: var(--unit2); }
-  .q-num.u3 { background: var(--unit3); }
-  .q-text {
-    font-size: 0.97rem; font-weight: 600; line-height: 1.55;
-    flex: 1;
-  }
-  .options {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 8px; padding: 0 22px 20px;
-  }
-  @media (max-width: 560px) { .options { grid-template-columns: 1fr; } }
-  .opt {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 14px; border-radius: 8px;
-    border: 1px solid var(--border); cursor: pointer;
-    transition: all 0.18s; font-size: 0.875rem; font-weight: 400;
-    background: transparent; color: var(--text); text-align: left;
-    font-family: 'Syne', sans-serif;
-  }
-  .opt:hover:not(:disabled) {
-    border-color: var(--accent); background: rgba(163,230,53,0.08);
-  }
-  .opt .opt-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.72rem; font-weight: 700;
-    color: var(--muted); min-width: 16px;
-  }
-  .opt:disabled { cursor: default; }
-  .opt.correct {
-    border-color: var(--correct); background: rgba(34,197,94,0.12);
-    color: #86efac;
-  }
-  .opt.correct .opt-label { color: var(--correct); }
-  .opt.wrong {
-    border-color: var(--wrong); background: rgba(239,68,68,0.1);
-    color: #fca5a5;
-  }
-  .opt.wrong .opt-label { color: var(--wrong); }
-  .q-explanation {
-    margin: 0 22px 16px;
-    padding: 10px 14px;
-    background: rgba(163,230,53,0.07);
-    border-left: 3px solid var(--accent);
-    border-radius: 0 6px 6px 0;
-    font-size: 0.83rem; color: #bef264; line-height: 1.55;
-    display: none;
-  }
-  .q-explanation.show { display: block; }
-  /* Results Panel */
-  .results-panel {
-    display: none;
-    max-width: 640px; margin: 0 auto 60px;
-    background: var(--card);
-    border: 2px solid var(--border);
-    border-radius: 20px; padding: 40px 36px;
-    text-align: center;
-  }
-  .results-panel.show { display: block; animation: fadeUp 0.5s ease; }
-  .grade-badge {
-    display: inline-block;
-    font-size: 4.5rem; font-weight: 800;
-    font-family: 'Space Mono', monospace;
-    padding: 18px 36px; border-radius: 20px;
-    border: 3px solid; margin-bottom: 10px;
-    letter-spacing: 2px;
-  }
-  .grade-A-plus  { color: #facc15; border-color: #facc15; background: rgba(250,204,21,0.08); }
-  .grade-A       { color: #a3e635; border-color: #a3e635; background: rgba(163,230,53,0.08); }
-  .grade-B-plus  { color: #4ade80; border-color: #4ade80; background: rgba(74,222,128,0.08); }
-  .grade-B       { color: #86efac; border-color: #86efac; background: rgba(134,239,172,0.08); }
-  .grade-C       { color: #bef264; border-color: #bef264; background: rgba(190,242,100,0.08); }
-  .grade-D       { color: #fbbf24; border-color: #fbbf24; background: rgba(251,191,36,0.08); }
-  .grade-F       { color: #f87171; border-color: #f87171; background: rgba(248,113,113,0.08); }
-  .grade-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 4px; }
-  .grade-msg { color: var(--muted); font-size: 0.88rem; margin-bottom: 28px; line-height: 1.5; }
-  .result-score {
-    font-size: 3rem; font-weight: 800;
-    background: linear-gradient(90deg, var(--accent), var(--accent3));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text; margin-bottom: 4px;
-  }
-  .result-label { color: var(--muted); margin-bottom: 22px; font-size: 0.88rem; }
-  .result-grid {
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    gap: 10px; margin-bottom: 24px;
-  }
-  .result-stat {
-    background: #132213; border-radius: 12px; padding: 14px 10px;
-    border: 1px solid var(--border);
-  }
-  .result-stat .val {
-    font-size: 1.5rem; font-weight: 800; font-family: 'Space Mono', monospace;
-  }
-  .result-stat .lbl { font-size: 0.7rem; color: var(--muted); margin-top: 3px; letter-spacing: 0.5px; }
-  .val.c { color: var(--correct); }
-  .val.w { color: var(--wrong); }
-  .val.p { color: var(--accent3); }
-  .val.s { color: var(--unit3); }
-  /* Unit breakdown bars */
-  .unit-breakdown { margin: 22px 0; text-align: left; }
-  .unit-breakdown h4 { font-size: 0.78rem; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 12px; text-transform: uppercase; }
-  .unit-row { margin-bottom: 12px; }
-  .unit-row-header { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 5px; }
-  .unit-row-header span:first-child { font-weight: 600; }
-  .unit-row-header span:last-child { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--muted); }
-  .unit-bar-bg { height: 8px; background: var(--border); border-radius: 10px; overflow: hidden; }
-  .unit-bar-fill { height: 100%; border-radius: 10px; transition: width 1s ease; }
-  .ub1 { background: linear-gradient(90deg, var(--unit1), #65a30d); }
-  .ub2 { background: linear-gradient(90deg, var(--unit2), #16a34a); }
-  .ub3 { background: linear-gradient(90deg, var(--unit3), #ca8a04); }
-  .grade-scale {
-    display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;
-    margin-bottom: 24px;
-  }
-  .gs-chip {
-    font-family: 'Space Mono', monospace; font-size: 0.68rem;
-    padding: 3px 10px; border-radius: 12px; border: 1px solid var(--border);
-    color: var(--muted);
-  }
-  .gs-chip.active-chip { font-weight: 700; color: var(--bg); }
+:root{
+  --bg:#060d0a;--glass:rgba(10,22,14,0.7);--glass2:rgba(15,30,18,0.88);
+  --border:rgba(163,230,53,0.12);--border2:rgba(163,230,53,0.28);
+  --lime:#a3e635;--green:#4ade80;--yellow:#facc15;--red:#f87171;
+  --text:#f0fdf4;--muted:#52734d;--muted2:#86a87f;
+  --u1:#a3e635;--u2:#4ade80;--u3:#facc15;
+  --correct:#22c55e;--wrong:#ef4444;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;overflow-x:hidden}
 
-  /* Toast */
-  .toast {
-    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
-    background: #132213; border: 1px solid var(--accent3);
-    color: var(--text); padding: 10px 22px; border-radius: 8px;
-    font-size: 0.85rem; z-index: 999; opacity: 0;
-    transition: opacity 0.3s; pointer-events: none;
-  }
-  .toast.show { opacity: 1; }
+/* BG */
+.mesh-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 50% at 10% 20%,rgba(163,230,53,0.07) 0%,transparent 70%),
+             radial-gradient(ellipse 50% 60% at 90% 80%,rgba(74,222,128,0.06) 0%,transparent 70%),
+             radial-gradient(ellipse 40% 40% at 50% 50%,rgba(250,204,21,0.03) 0%,transparent 70%);
+  animation:mp 8s ease-in-out infinite alternate}
+@keyframes mp{0%{opacity:.7}100%{opacity:1}}
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;animation:of 12s ease-in-out infinite alternate}
+.o1{width:400px;height:400px;top:-100px;left:-100px;background:rgba(163,230,53,0.05)}
+.o2{width:300px;height:300px;bottom:-80px;right:-80px;background:rgba(74,222,128,0.06);animation-delay:-4s}
+.o3{width:250px;height:250px;top:50%;left:60%;background:rgba(250,204,21,0.04);animation-delay:-8s}
+@keyframes of{0%{transform:translate(0,0) scale(1)}100%{transform:translate(30px,20px) scale(1.1)}}
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(163,230,53,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(163,230,53,0.022) 1px,transparent 1px);
+  background-size:48px 48px}
 
-  /* ── Welcome Screen ── */
-  #welcomeScreen { padding: 20px 20px 60px; }
-  .welcome-hero {
-    text-align: center; padding: 48px 20px 36px;
-  }
-  .dev-tag {
-    font-family: 'Space Mono', monospace; font-size: 0.72rem;
-    letter-spacing: 2px; color: var(--muted); margin-bottom: 20px;
-  }
-  .dev-tag span { color: var(--accent3); font-weight: 700; }
-  .welcome-icon { margin-bottom: 20px; }
-  .welcome-hero h1 {
-    font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 800;
-    line-height: 1.1; margin-bottom: 10px;
-  }
-  .welcome-hero h1 em {
-    font-style: normal;
-    background: linear-gradient(90deg, var(--accent), var(--accent3));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  }
-  .welcome-hero p { color: var(--muted); font-size: 1rem; }
-  .unit-select-label {
-    text-align: center; font-size: 1.2rem; font-weight: 800;
-    letter-spacing: 1px; margin-bottom: 28px; color: var(--text);
-  }
-  .unit-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 18px; max-width: 960px; margin: 0 auto;
-  }
-  .unit-card {
-    background: var(--card);
-    border: 2px solid var(--border);
-    border-radius: 18px; padding: 28px 22px;
-    cursor: pointer; transition: all 0.22s;
-    position: relative; overflow: hidden;
-    text-align: center;
-  }
-  .unit-card::before {
-    content: ''; position: absolute; inset: 0;
-    opacity: 0; transition: opacity 0.22s;
-  }
-  .unit-card:hover { transform: translateY(-6px); }
-  .uc1:hover { border-color: var(--text);    box-shadow: 0 12px 36px rgba(236,252,203,0.1); }
-  .uc2:hover { border-color: var(--unit1);   box-shadow: 0 12px 36px rgba(163,230,53,0.15); }
-  .uc3:hover { border-color: var(--unit2);   box-shadow: 0 12px 36px rgba(74,222,128,0.15); }
-  .uc4:hover { border-color: var(--unit3);   box-shadow: 0 12px 36px rgba(250,204,21,0.15); }
-  .uc-icon { font-size: 2.6rem; margin-bottom: 12px; }
-  .uc-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
-  .uc-sub { font-family: 'Space Mono', monospace; font-size: 0.78rem; color: var(--muted); margin-bottom: 10px; }
-  .uc-topics { font-size: 0.78rem; color: var(--muted); line-height: 1.5; margin-bottom: 16px; min-height: 36px; }
-  .uc-badge {
-    display: inline-block; font-size: 0.68rem; font-weight: 700;
-    letter-spacing: 1.5px; padding: 4px 12px; border-radius: 20px;
-    font-family: 'Space Mono', monospace;
-  }
-  .all-badge { background: rgba(236,252,203,0.12); color: var(--text);  border: 1px solid var(--border); }
-  .u1-badge  { background: rgba(163,230,53,0.12);  color: var(--unit1); border: 1px solid var(--unit1); }
-  .u2-badge  { background: rgba(74,222,128,0.12);  color: var(--unit2); border: 1px solid var(--unit2); }
-  .u3-badge  { background: rgba(250,204,21,0.12);  color: var(--unit3); border: 1px solid var(--unit3); }
-  /* Quiz header strip */
-  .quiz-header-strip {
-    display: flex; justify-content: space-between; align-items: center;
-    max-width: 860px; margin: 24px auto 0; padding: 10px 20px;
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 12px; font-family: 'Space Mono', monospace; font-size: 0.82rem;
-  }
-  .quiz-header-strip span:first-child { font-weight: 700; color: var(--accent); }
-  .quiz-header-strip span:last-child { color: var(--muted); }
+/* HEADER */
+.header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+  padding:14px 28px;background:rgba(6,13,10,0.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1rem}
+.logo-icon{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--lime),var(--green));
+  display:flex;align-items:center;justify-content:center;font-size:1rem}
+.logo-text{color:var(--text)}.logo-text span{color:var(--lime)}
+.sbar{display:flex;align-items:center;gap:12px}
+.spill{display:flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;font-size:0.78rem;
+  padding:6px 14px;border-radius:100px;background:rgba(163,230,53,0.08);border:1px solid var(--border2);color:var(--lime)}
+.spill .sep{color:var(--muted)}
+.ptrack{width:150px;height:5px;background:rgba(255,255,255,0.06);border-radius:100px;overflow:hidden}
+.pfill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--lime),var(--green));
+  transition:width .5s cubic-bezier(.4,0,.2,1);width:0%;box-shadow:0 0 10px rgba(163,230,53,.4)}
+.hbtn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:100px;font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:0.78rem;font-weight:600;cursor:pointer;background:transparent;color:var(--muted2);
+  border:1px solid rgba(255,255,255,.08);transition:all .2s}
+.hbtn:hover{border-color:var(--lime);color:var(--lime);background:rgba(163,230,53,.06)}
 
+/* WELCOME */
+#welcomeScreen{position:relative;z-index:1;min-height:calc(100vh - 62px);
+  display:flex;flex-direction:column;align-items:center;padding:56px 24px 80px}
+.hero{text-align:center;margin-bottom:52px}
+.dev-badge{display:inline-flex;align-items:center;gap:10px;padding:8px 18px;border-radius:100px;
+  background:rgba(163,230,53,.07);border:1px solid rgba(163,230,53,.2);margin-bottom:20px;
+  font-size:0.75rem;font-weight:600;letter-spacing:.5px;color:var(--muted2)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 6px var(--lime);
+  animation:bl 2s ease-in-out infinite;flex-shrink:0}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.3}}
+.dev-badge strong{color:var(--lime)}
+.slinks{display:flex;gap:10px;justify-content:center;margin-bottom:28px}
+.slink{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:100px;
+  font-size:0.73rem;font-weight:600;text-decoration:none;border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);color:var(--muted2);transition:all .2s;letter-spacing:.3px}
+.slink:hover{transform:translateY(-2px)}
+.slink.li:hover{border-color:var(--green);color:var(--green);background:rgba(74,222,128,.07);box-shadow:0 4px 20px rgba(74,222,128,.15)}
+.slink.gh:hover{border-color:var(--lime);color:var(--lime);background:rgba(163,230,53,.07);box-shadow:0 4px 20px rgba(163,230,53,.15)}
+h1.htitle{font-size:clamp(2.8rem,6vw,5rem);font-weight:800;line-height:1.05;letter-spacing:-1.5px;margin-bottom:14px}
+h1.htitle .hl{background:linear-gradient(135deg,var(--lime) 0%,var(--green) 50%,var(--yellow) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hsub{font-size:1rem;color:var(--muted2);margin-bottom:32px;line-height:1.6;max-width:480px;margin-left:auto;margin-right:auto}
+.hstats{display:inline-flex;border:1px solid var(--border);border-radius:16px;overflow:hidden;
+  background:var(--glass);backdrop-filter:blur(12px)}
+.hs{padding:14px 26px;text-align:center;border-right:1px solid var(--border)}
+.hs:last-child{border-right:none}
+.hsv{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:700;color:var(--lime);display:block}
+.hsl{font-size:0.72rem;color:var(--muted2);margin-top:2px;letter-spacing:.5px}
+.slbl{font-size:.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);margin-bottom:18px;text-align:center}
+
+/* UNIT CARDS */
+.ugrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:16px;width:100%;max-width:1000px}
+.ucard{position:relative;overflow:hidden;border-radius:20px;padding:26px 22px 52px;cursor:pointer;
+  background:var(--glass2);backdrop-filter:blur(16px);border:1px solid var(--border);
+  transition:all .28s cubic-bezier(.4,0,.2,1)}
+.ucard::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .28s;
+  background:linear-gradient(135deg,transparent 0%,rgba(163,230,53,.04) 100%)}
+.ucard:hover{transform:translateY(-8px)}.ucard:hover::before{opacity:1}
+.ucard.ca:hover{border-color:rgba(240,253,244,.2);box-shadow:0 20px 60px rgba(255,255,255,.05)}
+.ucard.c1:hover{border-color:rgba(163,230,53,.35);box-shadow:0 20px 60px rgba(163,230,53,.12)}
+.ucard.c2:hover{border-color:rgba(74,222,128,.35);box-shadow:0 20px 60px rgba(74,222,128,.12)}
+.ucard.c3:hover{border-color:rgba(250,204,21,.35);box-shadow:0 20px 60px rgba(250,204,21,.12)}
+.ucard::after{content:'';position:absolute;width:120px;height:120px;border-radius:50%;top:-40px;right:-40px;
+  filter:blur(35px);opacity:.25;transition:opacity .28s;pointer-events:none}
+.ca::after{background:rgba(240,253,244,.4)}.c1::after{background:var(--lime)}.c2::after{background:var(--green)}.c3::after{background:var(--yellow)}
+.ucard:hover::after{opacity:.45}
+.uctop{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.ucemoji{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;background:rgba(255,255,255,.04);border:1px solid var(--border)}
+.ucpill{font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:700;letter-spacing:1px;padding:4px 10px;border-radius:100px}
+.pa{background:rgba(240,253,244,.08);color:var(--text);border:1px solid rgba(255,255,255,.1)}
+.p1{background:rgba(163,230,53,.12);color:var(--lime);border:1px solid rgba(163,230,53,.3)}
+.p2{background:rgba(74,222,128,.12);color:var(--green);border:1px solid rgba(74,222,128,.3)}
+.p3{background:rgba(250,204,21,.12);color:var(--yellow);border:1px solid rgba(250,204,21,.3)}
+.uctitle{font-size:1.18rem;font-weight:800;margin-bottom:4px;letter-spacing:-.3px}
+.uccount{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--muted2);margin-bottom:12px}
+.uctopics{font-size:.77rem;color:var(--muted2);line-height:1.6;padding-top:12px;border-top:1px solid var(--border)}
+.ucarrow{position:absolute;bottom:20px;right:20px;width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.04);
+  border:1px solid var(--border);color:var(--muted2);font-size:.9rem;transition:all .28s}
+.ucard:hover .ucarrow{background:var(--lime);border-color:var(--lime);color:#060d0a;transform:translateX(3px)}
+
+/* QUIZ */
+#quizScreen{position:relative;z-index:1;display:none}
+.qtopbar{max-width:860px;margin:20px auto 0;padding:0 20px;display:flex;align-items:center;justify-content:space-between}
+.qutag{display:inline-flex;align-items:center;gap:8px;font-size:.82rem;font-weight:700;
+  padding:8px 16px;border-radius:100px;background:var(--glass2);backdrop-filter:blur(12px);border:1px solid var(--border)}
+.qprog{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--muted2)}
+.qcon{max-width:860px;margin:18px auto 0;padding:0 20px 100px;display:flex;flex-direction:column;gap:14px}
+
+/* Q CARD */
+.qcard{border-radius:18px;overflow:hidden;background:var(--glass2);backdrop-filter:blur(16px);
+  border:1px solid var(--border);transition:border-color .4s,box-shadow .4s;
+  animation:su .38s cubic-bezier(.4,0,.2,1) both}
+@keyframes su{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.qcard.ok{border-color:rgba(34,197,94,.4);box-shadow:0 0 0 1px rgba(34,197,94,.1),0 4px 24px rgba(34,197,94,.07)}
+.qcard.no{border-color:rgba(239,68,68,.4);box-shadow:0 0 0 1px rgba(239,68,68,.1),0 4px 24px rgba(239,68,68,.06)}
+.qhdr{display:flex;align-items:flex-start;gap:13px;padding:20px 20px 13px}
+.qbadge{flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:.64rem;font-weight:700;
+  letter-spacing:.5px;padding:5px 10px;border-radius:8px;margin-top:2px}
+.qbadge.u1{background:rgba(163,230,53,.14);color:var(--lime);border:1px solid rgba(163,230,53,.28)}
+.qbadge.u2{background:rgba(74,222,128,.14);color:var(--green);border:1px solid rgba(74,222,128,.28)}
+.qbadge.u3{background:rgba(250,204,21,.14);color:var(--yellow);border:1px solid rgba(250,204,21,.28)}
+.qtxt{font-size:.95rem;font-weight:600;line-height:1.6;flex:1;letter-spacing:-.1px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:0 20px 18px}
+@media(max-width:540px){.opts{grid-template-columns:1fr}}
+.opt{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:11px;
+  border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.02);cursor:pointer;
+  transition:all .17s;font-size:.875rem;font-weight:500;color:var(--text);text-align:left;
+  font-family:'Plus Jakarta Sans',sans-serif}
+.opt:hover:not(:disabled){border-color:rgba(163,230,53,.35);background:rgba(163,230,53,.06);transform:translateX(4px)}
+.oletter{flex-shrink:0;width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:.66rem;font-weight:700;
+  background:rgba(255,255,255,.05);color:var(--muted2);transition:all .17s}
+.opt:hover:not(:disabled) .oletter{background:rgba(163,230,53,.15);color:var(--lime)}
+.opt:disabled{cursor:default}
+.opt.correct{border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.08);color:#86efac}
+.opt.correct .oletter{background:rgba(34,197,94,.2);color:var(--correct)}
+.opt.wrong{border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.08);color:#fca5a5}
+.opt.wrong .oletter{background:rgba(239,68,68,.2);color:var(--wrong)}
+.qexp{margin:0 20px 18px;padding:11px 15px;border-radius:10px;background:rgba(163,230,53,.05);
+  border:1px solid rgba(163,230,53,.14);border-left:3px solid var(--lime);
+  font-size:.81rem;color:#bef264;line-height:1.6;display:none;animation:fi .3s ease}
+.qexp.show{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+/* RESULTS */
+.rpanel{display:none;max-width:660px;margin:28px auto 80px;padding:38px 34px;border-radius:24px;
+  background:var(--glass2);backdrop-filter:blur(20px);border:1px solid var(--border2);text-align:center;
+  animation:su .5s cubic-bezier(.4,0,.2,1);position:relative;z-index:1;box-shadow:0 24px 80px rgba(0,0,0,.4)}
+.rpanel.show{display:block}
+.rpanel::before{content:'';position:absolute;inset:0;border-radius:24px;pointer-events:none;
+  background:radial-gradient(circle at 15% 15%,rgba(163,230,53,.07) 0%,transparent 50%),
+             radial-gradient(circle at 85% 85%,rgba(74,222,128,.05) 0%,transparent 50%)}
+.gbadge{font-family:'JetBrains Mono',monospace;font-size:5rem;font-weight:700;line-height:1;
+  letter-spacing:-2px;padding:20px 40px;border-radius:20px;border:2px solid;
+  display:inline-block;margin-bottom:6px;position:relative}
+.gbadge::after{content:'';position:absolute;inset:-1px;border-radius:20px;background:inherit;
+  filter:blur(20px);opacity:.3;z-index:-1}
+.gAp{color:#facc15;border-color:#facc15;background:rgba(250,204,21,.06)}
+.gA {color:#a3e635;border-color:#a3e635;background:rgba(163,230,53,.06)}
+.gBp{color:#4ade80;border-color:#4ade80;background:rgba(74,222,128,.06)}
+.gB {color:#86efac;border-color:#86efac;background:rgba(134,239,172,.06)}
+.gC {color:#bef264;border-color:#bef264;background:rgba(190,242,100,.06)}
+.gD {color:#fbbf24;border-color:#fbbf24;background:rgba(251,191,36,.06)}
+.gF {color:#f87171;border-color:#f87171;background:rgba(248,113,113,.06)}
+.rtitle{font-size:1.45rem;font-weight:800;margin-bottom:4px;letter-spacing:-.5px}
+.rmsg{font-size:.87rem;color:var(--muted2);margin-bottom:26px;line-height:1.6;max-width:400px;margin-left:auto;margin-right:auto}
+.rscore{font-family:'JetBrains Mono',monospace;font-size:3.5rem;font-weight:700;
+  background:linear-gradient(135deg,var(--lime),var(--green));-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;line-height:1}
+.rscoresub{font-size:.75rem;color:var(--muted2);margin-bottom:22px;letter-spacing:.8px;text-transform:uppercase}
+.srow{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:22px}
+.sbox{padding:13px 8px;border-radius:13px;background:rgba(255,255,255,.03);border:1px solid var(--border)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:1.35rem;font-weight:700;display:block;margin-bottom:2px}
+.sv.c{color:var(--correct)}.sv.w{color:var(--wrong)}.sv.p{color:var(--green)}.sv.s{color:var(--yellow)}
+.slb{font-size:.65rem;color:var(--muted2);letter-spacing:.5px}
+.bdown{margin:18px 0;text-align:left}
+.bdtitle{font-size:.68rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted2);margin-bottom:13px;text-align:center}
+.brow{margin-bottom:11px}
+.browh{display:flex;justify-content:space-between;align-items:center;font-size:.79rem;font-weight:600;margin-bottom:5px}
+.browh .bs{font-family:'JetBrains Mono',monospace;font-size:.71rem;color:var(--muted2)}
+.btrack{height:6px;background:rgba(255,255,255,.05);border-radius:100px;overflow:hidden}
+.bfill{height:100%;border-radius:100px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.bf1{background:linear-gradient(90deg,var(--lime),#65a30d)}
+.bf2{background:linear-gradient(90deg,var(--green),#16a34a)}
+.bf3{background:linear-gradient(90deg,var(--yellow),#ca8a04)}
+.gscale{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-bottom:26px}
+.gs{font-family:'JetBrains Mono',monospace;font-size:.64rem;padding:4px 10px;border-radius:100px;
+  border:1px solid rgba(255,255,255,.08);color:var(--muted2);transition:all .2s}
+.gs.active{font-weight:700;color:#060d0a}
+.rbtns{display:flex;flex-direction:column;gap:10px;align-items:center}
+.rbrow{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:11px 22px;border-radius:100px;
+  font-family:'Plus Jakarta Sans',sans-serif;font-size:.84rem;font-weight:700;cursor:pointer;
+  border:none;transition:all .22s;letter-spacing:.2px}
+.blime{background:linear-gradient(135deg,var(--lime),var(--green));color:#060d0a;box-shadow:0 4px 20px rgba(163,230,53,.25)}
+.blime:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(163,230,53,.35)}
+.bghost{background:rgba(255,255,255,.04);color:var(--muted2);border:1px solid rgba(255,255,255,.1)}
+.bghost:hover{border-color:var(--lime);color:var(--lime);background:rgba(163,230,53,.06)}
+.bred{background:rgba(248,113,113,.08);color:var(--red);border:1px solid rgba(248,113,113,.2)}
+.bred:hover{background:rgba(248,113,113,.14);border-color:var(--red)}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);
+  padding:10px 20px;border-radius:100px;font-size:.82rem;font-weight:600;
+  background:rgba(15,30,18,.96);backdrop-filter:blur(16px);border:1px solid var(--border2);
+  color:var(--text);z-index:9999;opacity:0;pointer-events:none;
+  transition:all .3s cubic-bezier(.4,0,.2,1);white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(163,230,53,.2);border-radius:100px}
+::-webkit-scrollbar-thumb:hover{background:rgba(163,230,53,.4)}
 </style>
 </head>
 <body>
+<div class="mesh-bg"></div>
+<div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+<div class="grid-bg"></div>
 
-<!-- Cartoonish data-viz themed background -->
-<div class="bg-canvas">
-  <!-- Bar chart doodle top-left -->
-  <svg class="doodle" style="top:30px;left:30px;width:140px;opacity:0.12" viewBox="0 0 100 80">
-    <rect x="5"  y="50" width="16" height="28" rx="3" fill="#a3e635"/>
-    <rect x="27" y="30" width="16" height="48" rx="3" fill="#4ade80"/>
-    <rect x="49" y="15" width="16" height="63" rx="3" fill="#facc15"/>
-    <rect x="71" y="38" width="16" height="40" rx="3" fill="#a3e635"/>
-    <line x1="3" y1="79" x2="97" y2="79" stroke="#6b8f52" stroke-width="2"/>
-  </svg>
-  <!-- Pie chart doodle top-right -->
-  <svg class="doodle" style="top:20px;right:50px;width:120px;opacity:0.12" viewBox="0 0 100 100">
-    <circle cx="50" cy="50" r="40" fill="none" stroke="#1e3a1e" stroke-width="20"/>
-    <circle cx="50" cy="50" r="40" fill="none" stroke="#a3e635" stroke-width="20" stroke-dasharray="75 175" stroke-dashoffset="0"/>
-    <circle cx="50" cy="50" r="40" fill="none" stroke="#4ade80" stroke-width="20" stroke-dasharray="55 175" stroke-dashoffset="-75"/>
-    <circle cx="50" cy="50" r="40" fill="none" stroke="#facc15" stroke-width="20" stroke-dasharray="45 175" stroke-dashoffset="-130"/>
-  </svg>
-  <!-- Scatter plot mid-left -->
-  <svg class="doodle" style="top:40%;left:10px;width:130px;opacity:0.10" viewBox="0 0 100 80">
-    <circle cx="15" cy="65" r="5" fill="#a3e635"/><circle cx="28" cy="50" r="4" fill="#4ade80"/>
-    <circle cx="42" cy="38" r="6" fill="#facc15"/><circle cx="55" cy="28" r="4" fill="#a3e635"/>
-    <circle cx="68" cy="18" r="5" fill="#4ade80"/><circle cx="80" cy="12" r="3" fill="#facc15"/>
-    <circle cx="30" cy="60" r="3" fill="#facc15"/><circle cx="60" cy="35" r="4" fill="#a3e635"/>
-    <line x1="5" y1="72" x2="5" y2="5" stroke="#6b8f52" stroke-width="2"/>
-    <line x1="5" y1="72" x2="95" y2="72" stroke="#6b8f52" stroke-width="2"/>
-  </svg>
-  <!-- Line chart mid-right -->
-  <svg class="doodle" style="top:35%;right:20px;width:150px;opacity:0.10" viewBox="0 0 120 70">
-    <polyline points="5,55 25,40 45,45 65,20 85,30 105,10" fill="none" stroke="#a3e635" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
-    <circle cx="5"   cy="55" r="4" fill="#a3e635"/>
-    <circle cx="25"  cy="40" r="4" fill="#4ade80"/>
-    <circle cx="45"  cy="45" r="4" fill="#facc15"/>
-    <circle cx="65"  cy="20" r="4" fill="#a3e635"/>
-    <circle cx="85"  cy="30" r="4" fill="#4ade80"/>
-    <circle cx="105" cy="10" r="4" fill="#facc15"/>
-    <line x1="3" y1="62" x2="115" y2="62" stroke="#6b8f52" stroke-width="1.5"/>
-  </svg>
-  <!-- Waffle grid bottom-left -->
-  <svg class="doodle" style="bottom:120px;left:40px;width:110px;opacity:0.12" viewBox="0 0 70 70">
-    <rect x="2"  y="2"  width="13" height="13" rx="2" fill="#a3e635"/>
-    <rect x="19" y="2"  width="13" height="13" rx="2" fill="#a3e635"/>
-    <rect x="36" y="2"  width="13" height="13" rx="2" fill="#4ade80"/>
-    <rect x="53" y="2"  width="13" height="13" rx="2" fill="#facc15"/>
-    <rect x="2"  y="19" width="13" height="13" rx="2" fill="#4ade80"/>
-    <rect x="19" y="19" width="13" height="13" rx="2" fill="#facc15"/>
-    <rect x="36" y="19" width="13" height="13" rx="2" fill="#a3e635"/>
-    <rect x="53" y="19" width="13" height="13" rx="2" fill="#4ade80"/>
-    <rect x="2"  y="36" width="13" height="13" rx="2" fill="#facc15"/>
-    <rect x="19" y="36" width="13" height="13" rx="2" fill="#a3e635"/>
-    <rect x="36" y="36" width="13" height="13" rx="2" fill="#facc15"/>
-    <rect x="53" y="36" width="13" height="13" rx="2" fill="#4ade80"/>
-    <rect x="2"  y="53" width="13" height="13" rx="2" fill="#1e3a1e"/>
-    <rect x="19" y="53" width="13" height="13" rx="2" fill="#1e3a1e"/>
-    <rect x="36" y="53" width="13" height="13" rx="2" fill="#1e3a1e"/>
-    <rect x="53" y="53" width="13" height="13" rx="2" fill="#1e3a1e"/>
-  </svg>
-  <!-- Histogram bottom-right -->
-  <svg class="doodle" style="bottom:80px;right:40px;width:140px;opacity:0.11" viewBox="0 0 110 70">
-    <rect x="5"  y="55" width="14" height="12" rx="2" fill="#4ade80"/>
-    <rect x="21" y="38" width="14" height="29" rx="2" fill="#a3e635"/>
-    <rect x="37" y="15" width="14" height="52" rx="2" fill="#facc15"/>
-    <rect x="53" y="22" width="14" height="45" rx="2" fill="#a3e635"/>
-    <rect x="69" y="40" width="14" height="27" rx="2" fill="#4ade80"/>
-    <rect x="85" y="52" width="14" height="15" rx="2" fill="#facc15"/>
-    <line x1="3" y1="68" x2="105" y2="68" stroke="#6b8f52" stroke-width="2"/>
-  </svg>
-  <!-- Sigma symbol floating -->
-  <svg class="doodle" style="top:60%;left:45%;width:80px;opacity:0.09" viewBox="0 0 60 60">
-    <text x="5" y="52" font-size="52" font-family="serif" font-weight="bold" fill="#a3e635">Σ</text>
-  </svg>
-  <!-- Python brackets -->
-  <svg class="doodle" style="top:15%;left:42%;width:90px;opacity:0.08" viewBox="0 0 80 60">
-    <text x="2" y="50" font-size="46" font-family="'Space Mono',monospace" fill="#4ade80">{ }</text>
-  </svg>
-</div>
-
+<!-- HEADER -->
 <div class="header">
-  <div class="logo">DATA<span>VIZ</span> · MCQ</div>
-  <div class="score-bar" id="scoreBar" style="display:none">
-    <div class="score-chip">Score: <span id="liveScore">0</span>/<span id="liveAnswered">0</span></div>
-    <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
-    <button class="btn btn-danger" style="padding:6px 14px;font-size:0.78rem" onclick="goHome()">⌂ Home</button>
+  <div class="logo">
+    <div class="logo-icon">📊</div>
+    <div class="logo-text">Data<span>Viz</span> MCQ</div>
+  </div>
+  <div class="sbar" id="scoreBar" style="display:none">
+    <div class="spill"><span id="liveScore">0</span><span class="sep">/</span><span id="liveAnswered">0</span></div>
+    <div class="ptrack"><div class="pfill" id="progressFill"></div></div>
+    <button class="hbtn" onclick="goHome()">⌂ Home</button>
   </div>
 </div>
 
-<!-- ── WELCOME SCREEN ── -->
+<!-- WELCOME -->
 <div id="welcomeScreen">
-  <div class="welcome-hero">
-    <div class="dev-tag">DEVELOPER · <span>AYUSH KUMAR MAURYA</span></div>
-    <div style="display:flex;gap:14px;justify-content:center;margin-bottom:8px;flex-wrap:wrap;">
-      <a href="https://www.linkedin.com/in/ayush-kumar-maurya-326071384/" target="_blank" style="display:inline-flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:0.72rem;color:#4ade80;text-decoration:none;border:1px solid #1e3a1e;background:rgba(74,222,128,0.07);padding:5px 14px;border-radius:20px;letter-spacing:1px;transition:all 0.2s;" onmouseover="this.style.borderColor='#4ade80';this.style.background='rgba(74,222,128,0.15)'" onmouseout="this.style.borderColor='#1e3a1e';this.style.background='rgba(74,222,128,0.07)'">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="#4ade80"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+  <div class="hero">
+    <div class="dev-badge"><span class="dot"></span>DEVELOPER &nbsp;·&nbsp; <strong>AYUSH KUMAR MAURYA</strong></div>
+    <div class="slinks">
+      <a href="https://www.linkedin.com/in/ayush-kumar-maurya-326071384/" target="_blank" class="slink li">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
         LinkedIn
       </a>
-      <a href="https://github.com/akm45vns-oss" target="_blank" style="display:inline-flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:0.72rem;color:#a3e635;text-decoration:none;border:1px solid #1e3a1e;background:rgba(163,230,53,0.07);padding:5px 14px;border-radius:20px;letter-spacing:1px;transition:all 0.2s;" onmouseover="this.style.borderColor='#a3e635';this.style.background='rgba(163,230,53,0.15)'" onmouseout="this.style.borderColor='#1e3a1e';this.style.background='rgba(163,230,53,0.07)'">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="#a3e635"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+      <a href="https://github.com/akm45vns-oss" target="_blank" class="slink gh">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
         GitHub
       </a>
     </div>
-    <div class="welcome-icon">
-      <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
-        <rect x="6"  y="42" width="12" height="22" rx="3" fill="#a3e635"/>
-        <rect x="22" y="28" width="12" height="36" rx="3" fill="#4ade80"/>
-        <rect x="38" y="14" width="12" height="50" rx="3" fill="#facc15"/>
-        <rect x="54" y="34" width="12" height="30" rx="3" fill="#a3e635"/>
-        <line x1="4" y1="66" x2="68" y2="66" stroke="#6b8f52" stroke-width="3" stroke-linecap="round"/>
-      </svg>
+    <h1 class="htitle">Master Data<br><span class="hl">Visualization</span></h1>
+    <p class="hsub">100 handcrafted MCQs across 3 units — Statistics, Pandas &amp; Matplotlib. Instant feedback with explanations.</p>
+    <div class="hstats">
+      <div class="hs"><span class="hsv">100</span><span class="hsl">Questions</span></div>
+      <div class="hs"><span class="hsv">3</span><span class="hsl">Units</span></div>
+      <div class="hs"><span class="hsv">A–F</span><span class="hsl">Grading</span></div>
     </div>
-    <h1>Data Visualization<br><em>MCQ Quiz</em></h1>
-    <p>100 questions · 3 Units · Instant feedback</p>
   </div>
-
-  <div class="unit-select-label">📚 Choose Your Test</div>
-  <div class="unit-cards">
-    <div class="unit-card uc1" onclick="selectUnit('all')">
-      <div class="uc-icon">🌐</div>
-      <div class="uc-title">All Units</div>
-      <div class="uc-sub">100 Questions</div>
-      <div class="uc-topics">Stats · Pandas · Matplotlib</div>
-      <div class="uc-badge all-badge">FULL TEST</div>
+  <div class="slbl">📚 &nbsp;Choose Your Test</div>
+  <div class="ugrid">
+    <div class="ucard ca" onclick="selectUnit('all')">
+      <div class="uctop"><div class="ucemoji">🌐</div><div class="ucpill pa">FULL TEST</div></div>
+      <div class="uctitle">All Units</div><div class="uccount">100 Questions</div>
+      <div class="uctopics">Stats · Python · Pandas · NumPy · Matplotlib · All Topics</div>
+      <div class="ucarrow">→</div>
     </div>
-    <div class="unit-card uc2" onclick="selectUnit(1)">
-      <div class="uc-icon">📊</div>
-      <div class="uc-title">Unit I</div>
-      <div class="uc-sub">33 Questions</div>
-      <div class="uc-topics">Statistics · Python Basics · Data Types · Libraries</div>
-      <div class="uc-badge u1-badge">UNIT TEST</div>
+    <div class="ucard c1" onclick="selectUnit(1)">
+      <div class="uctop"><div class="ucemoji">📊</div><div class="ucpill p1">UNIT I</div></div>
+      <div class="uctitle" style="color:var(--lime)">Statistics &amp; Python</div><div class="uccount">33 Questions</div>
+      <div class="uctopics">Inferential Stats · Normal Distribution · Sampling · Data Types · Python Basics · Libraries</div>
+      <div class="ucarrow">→</div>
     </div>
-    <div class="unit-card uc3" onclick="selectUnit(2)">
-      <div class="uc-icon">🐼</div>
-      <div class="uc-title">Unit II</div>
-      <div class="uc-sub">33 Questions</div>
-      <div class="uc-topics">NumPy · Pandas · Data Wrangling · File I/O</div>
-      <div class="uc-badge u2-badge">UNIT TEST</div>
+    <div class="ucard c2" onclick="selectUnit(2)">
+      <div class="uctop"><div class="ucemoji">🐼</div><div class="ucpill p2">UNIT II</div></div>
+      <div class="uctitle" style="color:var(--green)">Data Manipulation</div><div class="uccount">33 Questions</div>
+      <div class="uctopics">NumPy · Pandas · DataFrames · Missing Data · Merging · GroupBy · String Ops · File I/O</div>
+      <div class="ucarrow">→</div>
     </div>
-    <div class="unit-card uc4" onclick="selectUnit(3)">
-      <div class="uc-icon">📈</div>
-      <div class="uc-title">Unit III</div>
-      <div class="uc-sub">34 Questions</div>
-      <div class="uc-topics">Jupyter · Matplotlib · Plots · Waffle Charts</div>
-      <div class="uc-badge u3-badge">UNIT TEST</div>
+    <div class="ucard c3" onclick="selectUnit(3)">
+      <div class="uctop"><div class="ucemoji">📈</div><div class="ucpill p3">UNIT III</div></div>
+      <div class="uctitle" style="color:var(--yellow)">Matplotlib &amp; Viz</div><div class="uccount">34 Questions</div>
+      <div class="uctopics">Jupyter · Line/Bar/Hist/Scatter · Subplots · Pie · Box · Waffle Charts · NumPy Arrays</div>
+      <div class="ucarrow">→</div>
     </div>
   </div>
 </div>
 
-<!-- ── QUIZ SCREEN ── -->
-<div id="quizScreen" style="display:none">
-  <div class="quiz-header-strip" id="quizHeaderStrip">
-    <span id="quizUnitLabel">Unit I</span>
-    <span id="quizProgress">Q 0 / 33</span>
+<!-- QUIZ SCREEN -->
+<div id="quizScreen">
+  <div class="qtopbar">
+    <div class="qutag" id="quizUnitLabel">Unit I</div>
+    <div class="qprog" id="quizProgress">0 / 0 answered</div>
   </div>
-<div class="questions-container" id="questionsContainer"></div>
-<div class="results-panel" id="resultsPanel">
-  <div class="grade-badge" id="rBadge">A+</div>
-  <div class="grade-title" id="rGradeTitle">Outstanding!</div>
-  <div class="grade-msg" id="rGradeMsg">You nailed it!</div>
-  <div class="result-score" id="rScore">0%</div>
-  <div class="result-label">Overall Score</div>
-  <div class="result-grid">
-    <div class="result-stat"><div class="val c" id="rCorrect">0</div><div class="lbl">✅ Correct</div></div>
-    <div class="result-stat"><div class="val w" id="rWrong">0</div><div class="lbl">❌ Wrong</div></div>
-    <div class="result-stat"><div class="val p" id="rPct">0%</div><div class="lbl">🎯 Accuracy</div></div>
-    <div class="result-stat"><div class="val s" id="rSkipped">0</div><div class="lbl">⏭ Skipped</div></div>
-  </div>
-  <!-- Unit breakdown -->
-  <div class="unit-breakdown">
-    <h4>📊 Performance by Unit</h4>
-    <div class="unit-row">
-      <div class="unit-row-header"><span style="color:var(--unit1)">Unit I · Stats &amp; Python</span><span id="u1stat">–</span></div>
-      <div class="unit-bar-bg"><div class="unit-bar-fill ub1" id="u1bar" style="width:0%"></div></div>
+  <div class="qcon" id="questionsContainer"></div>
+
+  <!-- RESULTS -->
+  <div class="rpanel" id="resultsPanel">
+    <div class="gbadge gAp" id="rBadge">A+</div>
+    <div class="rtitle" id="rGradeTitle">Outstanding!</div>
+    <div class="rmsg" id="rGradeMsg">You nailed it!</div>
+    <div class="rscore" id="rScore">0%</div>
+    <div class="rscoresub">Overall Score</div>
+    <div class="srow">
+      <div class="sbox"><span class="sv c" id="rCorrect">0</span><div class="slb">✅ CORRECT</div></div>
+      <div class="sbox"><span class="sv w" id="rWrong">0</span><div class="slb">❌ WRONG</div></div>
+      <div class="sbox"><span class="sv p" id="rPct">0%</span><div class="slb">🎯 ACCURACY</div></div>
+      <div class="sbox"><span class="sv s" id="rSkipped">0</span><div class="slb">⏭ SKIPPED</div></div>
     </div>
-    <div class="unit-row">
-      <div class="unit-row-header"><span style="color:var(--unit2)">Unit II · Pandas</span><span id="u2stat">–</span></div>
-      <div class="unit-bar-bg"><div class="unit-bar-fill ub2" id="u2bar" style="width:0%"></div></div>
+    <div class="bdown">
+      <div class="bdtitle">Performance by Unit</div>
+      <div class="brow">
+        <div class="browh"><span style="color:var(--lime)">Unit I · Stats &amp; Python</span><span class="bs" id="u1stat">–</span></div>
+        <div class="btrack"><div class="bfill bf1" id="u1bar" style="width:0%"></div></div>
+      </div>
+      <div class="brow">
+        <div class="browh"><span style="color:var(--green)">Unit II · Pandas</span><span class="bs" id="u2stat">–</span></div>
+        <div class="btrack"><div class="bfill bf2" id="u2bar" style="width:0%"></div></div>
+      </div>
+      <div class="brow">
+        <div class="browh"><span style="color:var(--yellow)">Unit III · Matplotlib</span><span class="bs" id="u3stat">–</span></div>
+        <div class="btrack"><div class="bfill bf3" id="u3bar" style="width:0%"></div></div>
+      </div>
     </div>
-    <div class="unit-row">
-      <div class="unit-row-header"><span style="color:var(--unit3)">Unit III · Matplotlib</span><span id="u3stat">–</span></div>
-      <div class="unit-bar-bg"><div class="unit-bar-fill ub3" id="u3bar" style="width:0%"></div></div>
+    <div class="gscale" id="gradeScale">
+      <span class="gs" data-min="95">A+ ≥95%</span><span class="gs" data-min="85">A ≥85%</span>
+      <span class="gs" data-min="75">B+ ≥75%</span><span class="gs" data-min="65">B ≥65%</span>
+      <span class="gs" data-min="50">C ≥50%</span><span class="gs" data-min="35">D ≥35%</span>
+      <span class="gs" data-min="0">F &lt;35%</span>
+    </div>
+    <div class="rbtns">
+      <div class="rbrow"><button class="btn blime" onclick="goHome()">⌂ &nbsp;Go Home</button></div>
+      <div class="rbrow">
+        <button class="btn bghost" onclick="retryWrong()">🔁 Retry Wrong Only</button>
+        <button class="btn bred" onclick="retryWhole()">↺ Retry Whole Test</button>
+      </div>
     </div>
   </div>
-  <!-- Grade scale -->
-  <div class="grade-scale" id="gradeScale">
-    <span class="gs-chip" data-min="95">A+ ≥95%</span>
-    <span class="gs-chip" data-min="85">A ≥85%</span>
-    <span class="gs-chip" data-min="75">B+ ≥75%</span>
-    <span class="gs-chip" data-min="65">B ≥65%</span>
-    <span class="gs-chip" data-min="50">C ≥50%</span>
-    <span class="gs-chip" data-min="35">D ≥35%</span>
-    <span class="gs-chip" data-min="0">F &lt;35%</span>
-  </div>
-<button class="btn btn-primary" style="margin-top:4px" onclick="goHome()">⌂ Back to Home</button>
 </div>
-
-</div><!-- end quizScreen -->
-
 <div class="toast" id="toast"></div>
 
 <script>
-const questions = [
-  // ── UNIT I (1–33) ──────────────────────────────────────────────────────────
-  {u:1, q:"What is the primary purpose of descriptive statistics?",
-   opts:["Draw conclusions about a population from a sample","Summarize and describe the features of a dataset","Predict future outcomes using probability","Test hypotheses using inferential methods"],
-   ans:1, exp:"Descriptive statistics organize, summarize, and present data features without going beyond the data itself."},
-
-  {u:1, q:"Which of the following best describes inferential statistics?",
-   opts:["Calculating mean and median of raw data","Drawing conclusions about a population based on a sample","Counting the frequency of observations","Constructing bar charts and histograms"],
-   ans:1, exp:"Inferential statistics use sample data to make inferences or predictions about a larger population."},
-
-  {u:1, q:"A random variable that can take any value within a range is called:",
-   opts:["Discrete random variable","Nominal variable","Continuous random variable","Categorical variable"],
-   ans:2, exp:"Continuous random variables can take any value within an interval, unlike discrete ones which take countable values."},
-
-  {u:1, q:"The normal probability distribution is also known as:",
-   opts:["Poisson distribution","Bell curve","Binomial distribution","Skewed distribution"],
-   ans:1, exp:"The normal distribution is famously shaped like a bell, symmetric about its mean."},
-
-  {u:1, q:"In a normal distribution, what percentage of data falls within ±1 standard deviation of the mean?",
-   opts:["68%","95%","99.7%","50%"],
-   ans:0, exp:"The empirical rule (68-95-99.7 rule) states approximately 68% of data falls within ±1σ."},
-
-  {u:1, q:"Which sampling technique divides the population into subgroups and samples from each?",
-   opts:["Simple random sampling","Systematic sampling","Stratified sampling","Cluster sampling"],
-   ans:2, exp:"Stratified sampling divides population into strata (subgroups) and samples proportionally from each."},
-
-  {u:1, q:"Nominal data is best described as:",
-   opts:["Data with a meaningful order and equal intervals","Data with categories without any natural order","Data measured on a continuous scale","Data with a true zero point"],
-   ans:1, exp:"Nominal data consists of categories with no inherent ranking, e.g., gender, eye color, religion."},
-
-  {u:1, q:"Which of the following is an example of ordinal data?",
-   opts:["Temperature in Celsius","Customer satisfaction rating (1–5 stars)","Weight in kilograms","Blood type (A, B, AB, O)"],
-   ans:1, exp:"Ordinal data has a meaningful order but unequal intervals between values, like satisfaction ratings."},
-
-  {u:1, q:"What is the key difference between ordinal and nominal data?",
-   opts:["Ordinal data has a true zero; nominal does not","Ordinal data has a natural order; nominal does not","Nominal data is numerical; ordinal is categorical","They are the same type of data"],
-   ans:1, exp:"The defining feature of ordinal data is its meaningful ranking/ordering, which nominal data lacks."},
-
-  {u:1, q:"Which Python library is most commonly used for numerical computing?",
-   opts:["Matplotlib","Pandas","NumPy","Seaborn"],
-   ans:2, exp:"NumPy (Numerical Python) is the foundational library for numerical computation and array operations in Python."},
-
-  {u:1, q:"What does the `//` operator do in Python?",
-   opts:["Modulus (remainder)","Exponentiation","Floor division","Regular division"],
-   ans:2, exp:"The `//` operator performs floor division, returning the integer quotient rounded down."},
-
-  {u:1, q:"Which data type in Python is immutable and ordered?",
-   opts:["List","Dictionary","Set","Tuple"],
-   ans:3, exp:"Tuples are ordered and immutable — once created, their elements cannot be changed."},
-
-  {u:1, q:"What is the output of `type(3.14)` in Python?",
-   opts:["&lt;class 'int'&gt;","&lt;class 'str'&gt;","&lt;class 'float'&gt;","&lt;class 'complex'&gt;"],
-   ans:2, exp:"3.14 is a floating-point number, so Python's type() returns <class 'float'>."},
-
-  {u:1, q:"Which library is used for creating static, animated, and interactive visualizations in Python?",
-   opts:["NumPy","Pandas","Matplotlib","Scikit-learn"],
-   ans:2, exp:"Matplotlib is the core Python plotting library for creating a wide variety of static and interactive charts."},
-
-  {u:1, q:"What is the use of the `%` operator in Python?",
-   opts:["Exponentiation","Floor division","Modulus (remainder after division)","Bitwise AND"],
-   ans:2, exp:"The `%` operator returns the remainder when one number is divided by another."},
-
-  {u:1, q:"The mean of a normal distribution is always:",
-   opts:["Greater than the median","Less than the mode","Equal to the median and mode","Different from the median"],
-   ans:2, exp:"In a perfect normal distribution, mean = median = mode, all located at the center."},
-
-  {u:1, q:"A population parameter estimated from a sample is called a:",
-   opts:["Variable","Statistic","Constant","Distribution"],
-   ans:1, exp:"A sample statistic (like sample mean x̄) estimates the corresponding population parameter (like μ)."},
-
-  {u:1, q:"Which of the following is NOT a Python arithmetic operator?",
-   opts:["**","//","%","&&"],
-   ans:3, exp:"&& is not a Python operator. Python uses `and` for logical AND. && is used in languages like C/Java."},
-
-  {u:1, q:"Seaborn is built on top of which library?",
-   opts:["NumPy","Pandas","Matplotlib","SciPy"],
-   ans:2, exp:"Seaborn is a high-level statistical visualization library built on top of Matplotlib."},
-
-  {u:1, q:"What type of data is 'country of birth'?",
-   opts:["Continuous","Ordinal","Nominal","Interval"],
-   ans:2, exp:"Country of birth is nominal data — it represents categories with no natural ordering."},
-
-  {u:1, q:"In Python, which keyword is used to define a function?",
-   opts:["func","define","def","function"],
-   ans:2, exp:"Python uses the `def` keyword to define a function, followed by the function name and parameters."},
-
-  {u:1, q:"Which of the following represents a discrete random variable?",
-   opts:["Height of a person","Temperature of a city","Number of students in a class","Weight of a fruit"],
-   ans:2, exp:"Number of students is countable and can only take integer values — a classic discrete random variable."},
-
-  {u:1, q:"What does the `!=` operator check in Python?",
-   opts:["Assignment","Equality","Not equal to","Greater than"],
-   ans:2, exp:"`!=` is the 'not equal to' comparison operator, returning True if operands are not equal."},
-
-  {u:1, q:"Which visualization library allows interactive plots with hover/zoom features in Python?",
-   opts:["Matplotlib","Seaborn","Plotly","NumPy"],
-   ans:2, exp:"Plotly creates interactive visualizations with features like hover tooltips, zoom, and pan."},
-
-  {u:1, q:"The standard deviation measures:",
-   opts:["The central value of data","The spread of data around the mean","The skewness of the distribution","The number of observations"],
-   ans:1, exp:"Standard deviation quantifies the amount of variation/spread of values around the mean."},
-
-  {u:1, q:"Which statement about Python lists is TRUE?",
-   opts:["Lists are immutable","Lists can only store integers","Lists are ordered and mutable","Lists cannot contain duplicate values"],
-   ans:2, exp:"Python lists are ordered, mutable (changeable), and can contain duplicates and mixed data types."},
-
-  {u:1, q:"A `z-score` tells us:",
-   opts:["The frequency of a value","How many standard deviations a value is from the mean","The median of the dataset","The interquartile range"],
-   ans:1, exp:"The z-score standardizes a value showing its distance from the mean in standard deviation units."},
-
-  {u:1, q:"Which Python data structure uses key-value pairs?",
-   opts:["List","Tuple","Set","Dictionary"],
-   ans:3, exp:"Dictionaries store data as key-value pairs, allowing fast lookup by key."},
-
-  {u:1, q:"In sampling, what is a 'sampling frame'?",
-   opts:["The shape of data distribution","The complete list from which a sample is drawn","The margin of error","The sample size formula"],
-   ans:1, exp:"A sampling frame is the complete list of all members of the population from which a sample is selected."},
-
-  {u:1, q:"Plotly Express is part of which library?",
-   opts:["Matplotlib","Seaborn","Plotly","Bokeh"],
-   ans:2, exp:"Plotly Express is a high-level interface within the Plotly library for creating figures quickly."},
-
-  {u:1, q:"Which of the following correctly installs a Python library?",
-   opts:["install pandas","python get pandas","pip install pandas","get-pip pandas"],
-   ans:2, exp:"`pip install <library>` is the standard command to install Python packages from PyPI."},
-
-  {u:1, q:"Boolean data type in Python can hold:",
-   opts:["Any integer value","Only True or False","Any string value","Float values between 0 and 1"],
-   ans:1, exp:"Python's bool type holds only two values: True or False (which also equal 1 and 0 numerically)."},
-
-  {u:1, q:"Which of these is an example of interval data?",
-   opts:["Eye color","Blood type","Temperature in Celsius","Number of siblings"],
-   ans:2, exp:"Temperature in Celsius is interval data — it has equal intervals but no true zero (0°C is not 'no temperature')."},
-
-  // ── UNIT II (34–66) ────────────────────────────────────────────────────────
-  {u:2, q:"What does NumPy stand for?",
-   opts:["New Python","Numerical Python","Next Python","Node Python"],
-   ans:1, exp:"NumPy stands for Numerical Python — it's Python's core library for numerical array computation."},
-
-  {u:2, q:"Which Pandas data structure is a one-dimensional labeled array?",
-   opts:["DataFrame","Array","Series","Matrix"],
-   ans:2, exp:"A Pandas Series is a one-dimensional labeled array capable of holding any data type."},
-
-  {u:2, q:"Which Pandas data structure is a two-dimensional labeled table?",
-   opts:["Series","Array","Matrix","DataFrame"],
-   ans:3, exp:"A DataFrame is a 2D labeled data structure like a spreadsheet or SQL table, with rows and columns."},
-
-  {u:2, q:"How do you import Pandas in Python?",
-   opts:["import pandas","import pd","import pandas as pd","from pandas import *"],
-   ans:2, exp:"The conventional way is `import pandas as pd`, making all pandas functions accessible via `pd`."},
-
-  {u:2, q:"Which function reads a CSV file in Pandas?",
-   opts:["pd.load_csv()","pd.read_csv()","pd.open_csv()","pd.import_csv()"],
-   ans:1, exp:"`pd.read_csv('filename.csv')` is the standard Pandas function to load CSV files into a DataFrame."},
-
-  {u:2, q:"What does `df.head()` return by default?",
-   opts:["Last 5 rows","First 10 rows","First 5 rows","Column names only"],
-   ans:2, exp:"`df.head()` returns the first 5 rows of a DataFrame by default. Use `df.head(n)` for n rows."},
-
-  {u:2, q:"Which method is used to check for missing values in a DataFrame?",
-   opts:["df.missing()","df.isnull()","df.na_check()","df.checkna()"],
-   ans:1, exp:"`df.isnull()` returns a boolean DataFrame indicating which values are NaN/missing."},
-
-  {u:2, q:"How do you drop rows with missing values in Pandas?",
-   opts:["df.remove_na()","df.drop_missing()","df.dropna()","df.clean()"],
-   ans:2, exp:"`df.dropna()` removes all rows that contain at least one missing value (NaN)."},
-
-  {u:2, q:"Which function fills missing values with a specified value?",
-   opts:["df.replace_na()","df.fill()","df.fillna()","df.impute()"],
-   ans:2, exp:"`df.fillna(value)` replaces all NaN entries with the specified value."},
-
-  {u:2, q:"What does `df.describe()` provide?",
-   opts:["Column data types","Summary statistics (count, mean, std, min, max, quartiles)","First 5 rows of data","Number of missing values"],
-   ans:1, exp:"`df.describe()` generates descriptive statistics including count, mean, std, min, max, and quartiles."},
-
-  {u:2, q:"Which Pandas method is used to group data by a column?",
-   opts:["df.sort_by()","df.groupby()","df.cluster()","df.partition()"],
-   ans:1, exp:"`df.groupby('col')` splits data into groups based on column values, enabling aggregation operations."},
-
-  {u:2, q:"What does vectorized computation mean in NumPy?",
-   opts:["Using for loops on arrays","Performing operations element-wise on entire arrays without explicit loops","Storing data in vectors","Converting data to vectors"],
-   ans:1, exp:"Vectorized operations apply functions to entire arrays at once without Python loops, making them much faster."},
-
-  {u:2, q:"How do you select a column named 'Age' from DataFrame `df`?",
-   opts:["df.Age","df['Age']","Both A and B","df.get('Age')"],
-   ans:2, exp:"Both `df.Age` (dot notation) and `df['Age']` (bracket notation) work to select a column. Both A and B is correct."},
-
-  {u:2, q:"Which function merges two DataFrames on a common key?",
-   opts:["pd.combine()","pd.concat()","pd.merge()","pd.join_tables()"],
-   ans:2, exp:"`pd.merge(df1, df2, on='key')` merges DataFrames similar to SQL JOINs based on a common column."},
-
-  {u:2, q:"What does `pd.concat([df1, df2])` do?",
-   opts:["Merges on a key column","Concatenates DataFrames along an axis (stacking rows/columns)","Joins on index","Computes element-wise sum"],
-   ans:1, exp:"`pd.concat()` concatenates DataFrames by stacking them along a specified axis (default: rows)."},
-
-  {u:2, q:"What is hierarchical indexing in Pandas called?",
-   opts:["MultiIndex","SubIndex","NestedIndex","LayerIndex"],
-   ans:0, exp:"Pandas MultiIndex (hierarchical indexing) allows multiple levels of indexing on a single axis."},
-
-  {u:2, q:"What does `df.pivot_table()` do?",
-   opts:["Rotates the entire DataFrame 90°","Creates a spreadsheet-style pivot table with aggregation","Converts columns to rows","Removes duplicate rows"],
-   ans:1, exp:"`df.pivot_table()` creates a summary table by aggregating values grouped by specified row/column labels."},
-
-  {u:2, q:"Which method sorts a DataFrame by a specific column?",
-   opts:["df.order_by()","df.sort_values()","df.arrange()","df.rank()"],
-   ans:1, exp:"`df.sort_values('col')` sorts the DataFrame by the specified column in ascending order by default."},
-
-  {u:2, q:"What does the `str.replace()` method do on a Pandas Series?",
-   opts:["Replaces entire column values","Replaces substrings within string values","Deletes matching rows","Converts strings to integers"],
-   ans:1, exp:"`Series.str.replace(old, new)` replaces occurrences of a substring within each string element."},
-
-  {u:2, q:"Which method gives the data types of all columns in a DataFrame?",
-   opts:["df.info()","df.dtypes","df.types()","Both A and B"],
-   ans:3, exp:"Both `df.dtypes` (returns Series of dtype per column) and `df.info()` display column data types."},
-
-  {u:2, q:"How do you write a DataFrame to a CSV file?",
-   opts:["df.save_csv('file.csv')","df.to_csv('file.csv')","df.export('file.csv')","df.write_csv('file.csv')"],
-   ans:1, exp:"`df.to_csv('filename.csv')` writes the DataFrame to a CSV file. Use `index=False` to skip row numbers."},
-
-  {u:2, q:"What does `df.shape` return?",
-   opts:["Column names","Row count only","A tuple of (rows, columns)","Memory size of the DataFrame"],
-   ans:2, exp:"`df.shape` returns a tuple `(number_of_rows, number_of_columns)` — the dimensions of the DataFrame."},
-
-  {u:2, q:"Which aggregation function calculates the mean in a groupby operation?",
-   opts:[".sum()",".mean()",".count()",".avg()"],
-   ans:1, exp:"`.mean()` calculates the arithmetic mean of numeric values within each group after `groupby()`."},
-
-  {u:2, q:"What is data wrangling?",
-   opts:["Visualizing data using charts","The process of cleaning, transforming, and preparing raw data for analysis","Writing SQL queries","Loading data from databases"],
-   ans:1, exp:"Data wrangling (munging) is the process of cleaning, transforming, and mapping raw data into a suitable format for analysis."},
-
-  {u:2, q:"Which method removes duplicate rows in a DataFrame?",
-   opts:["df.unique()","df.drop_duplicates()","df.remove_dup()","df.deduplicate()"],
-   ans:1, exp:"`df.drop_duplicates()` removes duplicate rows, keeping the first occurrence by default."},
-
-  {u:2, q:"How do you rename columns in Pandas?",
-   opts:["df.change_columns()","df.rename(columns={...})","df.relabel()","df.columns.update()"],
-   ans:1, exp:"`df.rename(columns={'old_name': 'new_name'})` renames specified columns in a DataFrame."},
-
-  {u:2, q:"What does `df.melt()` do?",
-   opts:["Sorts the DataFrame","Converts wide-format data to long-format (unpivots)","Merges two DataFrames","Removes NaN values"],
-   ans:1, exp:"`df.melt()` unpivots a DataFrame from wide format to long format, useful for data reshaping."},
-
-  {u:2, q:"Which Pandas function reads an Excel file?",
-   opts:["pd.read_excel()","pd.load_excel()","pd.open_excel()","pd.import_excel()"],
-   ans:0, exp:"`pd.read_excel('file.xlsx')` reads an Excel file into a Pandas DataFrame."},
-
-  {u:2, q:"What does `df.loc[]` do?",
-   opts:["Selects by integer position","Selects by label/index name","Filters by condition only","Selects random rows"],
-   ans:1, exp:"`df.loc[]` is label-based indexing — it selects rows and columns using their names/labels."},
-
-  {u:2, q:"What does `df.iloc[]` do?",
-   opts:["Selects by label/index name","Selects by integer position","Selects using SQL-like syntax","Selects by boolean mask"],
-   ans:1, exp:"`df.iloc[]` is integer-position based indexing — it selects rows/columns by their numeric position."},
-
-  {u:2, q:"Which method applies a function to each element of a DataFrame?",
-   opts:["df.map()","df.applymap() / df.map()","df.transform()","df.execute()"],
-   ans:1, exp:"`df.applymap()` (deprecated in newer Pandas, replaced by `df.map()`) applies a function element-wise."},
-
-  {u:2, q:"What is the difference between `inner` and `outer` join in `pd.merge()`?",
-   opts:["Inner keeps all rows; outer keeps only matching rows","Inner keeps only matching rows; outer keeps all rows from both DataFrames","They produce identical results","Outer keeps rows only from the left DataFrame"],
-   ans:1, exp:"INNER join returns only matching rows; OUTER join returns all rows from both DataFrames, filling unmatched with NaN."},
-
-  {u:2, q:"Which method computes the correlation matrix of a DataFrame?",
-   opts:["df.covariance()","df.corr()","df.correlation()","df.relate()"],
-   ans:1, exp:"`df.corr()` computes pairwise correlation of columns, useful for identifying linear relationships."},
-
-  // ── UNIT III (67–100) ──────────────────────────────────────────────────────
-  {u:3, q:"Jupyter Notebook files are saved with which extension?",
-   opts:[".py",".ipynb",".jnb",".nb"],
-   ans:1, exp:"Jupyter Notebooks are saved as `.ipynb` (Interactive Python Notebook) files in JSON format."},
-
-  {u:3, q:"Which magic command runs a Python script in Jupyter Notebook?",
-   opts:["%run","%exec","%load","%start"],
-   ans:0, exp:"`%run script.py` executes a Python script file directly within a Jupyter Notebook cell."},
-
-  {u:3, q:"What is the correct way to import Matplotlib for plotting?",
-   opts:["import matplotlib","import matplotlib.pyplot","import matplotlib.pyplot as plt","from matplotlib import plot"],
-   ans:2, exp:"The standard convention is `import matplotlib.pyplot as plt`, making all plot functions accessible via `plt`."},
-
-  {u:3, q:"Which function creates a line plot in Matplotlib?",
-   opts:["plt.line()","plt.lineplot()","plt.plot()","plt.draw()"],
-   ans:2, exp:"`plt.plot(x, y)` creates a line plot. It's the most fundamental Matplotlib plotting function."},
-
-  {u:3, q:"Which function creates a bar chart in Matplotlib?",
-   opts:["plt.bar_chart()","plt.bar()","plt.column()","plt.barchart()"],
-   ans:1, exp:"`plt.bar(x, height)` creates a vertical bar chart. `plt.barh()` creates a horizontal bar chart."},
-
-  {u:3, q:"Which function creates a histogram in Matplotlib?",
-   opts:["plt.hist()","plt.histogram()","plt.distplot()","plt.freq()"],
-   ans:0, exp:"`plt.hist(data, bins=n)` creates a histogram showing the frequency distribution of data."},
-
-  {u:3, q:"What does `plt.show()` do?",
-   opts:["Saves the figure to a file","Displays the rendered plot on screen","Clears the current figure","Closes the plot window"],
-   ans:1, exp:"`plt.show()` renders and displays the currently built plot to the screen or notebook output."},
-
-  {u:3, q:"How do you add a title to a Matplotlib plot?",
-   opts:["plt.heading('title')","plt.label('title')","plt.title('title')","plt.add_title('title')"],
-   ans:2, exp:"`plt.title('Your Title')` adds a title above the plot area."},
-
-  {u:3, q:"Which function adds a label to the x-axis?",
-   opts:["plt.x_label()","plt.xlabel()","plt.label_x()","plt.axis_label('x')"],
-   ans:1, exp:"`plt.xlabel('Label')` sets the label for the x-axis of the current plot."},
-
-  {u:3, q:"How do you create a scatter plot in Matplotlib?",
-   opts:["plt.scatter(x, y)","plt.points(x, y)","plt.dot(x, y)","plt.plot_scatter(x, y)"],
-   ans:0, exp:"`plt.scatter(x, y)` creates a scatter plot, displaying individual data points as markers."},
-
-  {u:3, q:"What does `plt.legend()` do?",
-   opts:["Sets the axis limits","Displays a legend box showing what each line/color represents","Adds grid lines","Removes axes"],
-   ans:1, exp:"`plt.legend()` displays a legend that identifies the different data series in a plot."},
-
-  {u:3, q:"What is a subplot in Matplotlib?",
-   opts:["A type of bar chart","Multiple plots arranged in a single figure","A plot with two y-axes","A zoomed-in section of a plot"],
-   ans:1, exp:"Subplots allow multiple axes/plots to be placed in a grid layout within a single figure."},
-
-  {u:3, q:"Which function creates subplots in Matplotlib?",
-   opts:["plt.subplot_grid()","plt.make_subplots()","plt.subplots()","plt.grid_plot()"],
-   ans:2, exp:"`fig, axes = plt.subplots(rows, cols)` creates a figure with a grid of subplots."},
-
-  {u:3, q:"What is a Waffle Chart used for?",
-   opts:["Showing correlation between variables","Visualizing part-to-whole relationships using a grid of squares","Plotting time series data","Showing distribution of continuous data"],
-   ans:1, exp:"Waffle charts use a grid of colored squares to display proportional/part-to-whole relationships in an engaging way."},
-
-  {u:3, q:"Which Python library is specifically designed to create Waffle Charts?",
-   opts:["Matplotlib","pywaffle","Seaborn","Plotly"],
-   ans:1, exp:"The `pywaffle` library extends Matplotlib to create waffle charts easily using the `Waffle` figure class."},
-
-  {u:3, q:"What does `plt.savefig('plot.png')` do?",
-   opts:["Loads a plot from file","Saves the current figure to a file","Displays the plot","Exports data to CSV"],
-   ans:1, exp:"`plt.savefig('filename.png')` saves the current figure to a file in the specified format (png, pdf, svg, etc.)."},
-
-  {u:3, q:"Which parameter controls the number of bins in `plt.hist()`?",
-   opts:["size","count","bins","intervals"],
-   ans:2, exp:"The `bins` parameter in `plt.hist(data, bins=20)` controls how many intervals the data is divided into."},
-
-  {u:3, q:"What is the purpose of `plt.tight_layout()`?",
-   opts:["Increases plot size","Adjusts spacing between subplots to prevent overlap","Adds grid lines","Resets the figure"],
-   ans:1, exp:"`plt.tight_layout()` automatically adjusts subplot parameters so subplots don't overlap each other."},
-
-  {u:3, q:"What does `plt.grid(True)` do?",
-   opts:["Creates a subplot grid","Adds grid lines to the plot background","Makes the plot interactive","Changes the plot style"],
-   ans:1, exp:"`plt.grid(True)` adds a grid of horizontal and vertical lines to the plot for easier reading of values."},
-
-  {u:3, q:"Which parameter in `plt.plot()` changes line style to dashed?",
-   opts:["line='--'","style='dashed'","linestyle='--'","ls='dashed'"],
-   ans:2, exp:"The `linestyle='--'` (or `ls='--'`) parameter in `plt.plot()` renders the line as a dashed pattern."},
-
-  {u:3, q:"What does `figsize=(10, 6)` control in Matplotlib?",
-   opts:["Font size","DPI resolution","Width and height of the figure in inches","Number of subplots"],
-   ans:2, exp:"`figsize=(width, height)` in `plt.figure()` or `plt.subplots()` sets the figure dimensions in inches."},
-
-  {u:3, q:"Which Matplotlib function creates a pie chart?",
-   opts:["plt.pie_chart()","plt.circle()","plt.pie()","plt.donut()"],
-   ans:2, exp:"`plt.pie(values, labels=labels)` creates a pie chart showing proportional data."},
-
-  {u:3, q:"What is the Matplotlib object-oriented (OO) approach?",
-   opts:["Using only plt.functions","Creating Figure and Axes objects explicitly for more control","Using Seaborn instead of Matplotlib","Automating plot generation"],
-   ans:1, exp:"The OO approach creates `fig, ax = plt.subplots()` and calls methods on `ax` directly for greater flexibility."},
-
-  {u:3, q:"Which function adds a horizontal line to a plot in Matplotlib?",
-   opts:["plt.hline()","plt.axhline()","plt.horizontal()","plt.h_line()"],
-   ans:1, exp:"`plt.axhline(y=value)` draws a horizontal line spanning the full width of the plot at the specified y-value."},
-
-  {u:3, q:"What does the `alpha` parameter control in Matplotlib plots?",
-   opts:["Axis angle","Font size","Transparency/opacity of plot elements","Color saturation"],
-   ans:2, exp:"The `alpha` parameter (0 to 1) controls the transparency of plot elements; 0 = fully transparent, 1 = fully opaque."},
-
-  {u:3, q:"Which Jupyter Notebook cell type executes Python code?",
-   opts:["Markdown cell","Raw cell","Code cell","Text cell"],
-   ans:2, exp:"Code cells in Jupyter Notebook contain Python code that can be executed, displaying output below the cell."},
-
-  {u:3, q:"How do you change the color of a line in `plt.plot()`?",
-   opts:["plt.plot(x, y, shade='red')","plt.plot(x, y, color='red')","plt.plot(x, y, fill='red')","plt.plot(x, y, hue='red')"],
-   ans:1, exp:"The `color` parameter (`color='red'` or `color='#ff0000'`) sets the line color in `plt.plot()`."},
-
-  {u:3, q:"What is the output of `np.arange(0, 10, 2)`?",
-   opts:["[0,1,2,3,4,5,6,7,8,9]","[0,2,4,6,8]","[2,4,6,8,10]","[0,2,4,6,8,10]"],
-   ans:1, exp:"`np.arange(start, stop, step)` generates [0,2,4,6,8] — it stops BEFORE 10, with step=2."},
-
-  {u:3, q:"Which function in NumPy creates an array of zeros?",
-   opts:["np.empty()","np.zero()","np.zeros()","np.blank()"],
-   ans:2, exp:"`np.zeros(shape)` creates an array filled with 0.0 values of the specified shape."},
-
-  {u:3, q:"What does `plt.style.use('ggplot')` do?",
-   opts:["Imports ggplot library","Applies a pre-defined visual style to all subsequent plots","Creates a new subplot","Adds a grid"],
-   ans:1, exp:"`plt.style.use('ggplot')` applies R's ggplot aesthetic style (gray background, colored gridlines) to Matplotlib plots."},
-
-  {u:3, q:"How do you add text annotation to a specific point on a Matplotlib plot?",
-   opts:["plt.text() or plt.annotate()","plt.label_point()","plt.add_text()","plt.mark()"],
-   ans:0, exp:"Both `plt.text(x, y, 'string')` and `plt.annotate('text', xy=(x,y))` add text annotations to specific plot coordinates."},
-
-  {u:3, q:"What does the `marker` parameter do in `plt.plot()`?",
-   opts:["Changes line color","Sets the line thickness","Adds symbols at data points","Adds axis labels"],
-   ans:2, exp:"The `marker` parameter (e.g., `marker='o'` for circles, `marker='s'` for squares) adds symbols at each data point."},
-
-  {u:3, q:"Which Matplotlib function creates a box plot?",
-   opts:["plt.box()","plt.boxplot()","plt.whisker()","plt.quartile()"],
-   ans:1, exp:"`plt.boxplot(data)` creates a box-and-whisker plot showing median, quartiles, and outliers."},
-
-  {u:3, q:"What is the default figure size in Matplotlib (in inches)?",
-   opts:["(8, 6)","(10, 8)","(6.4, 4.8)","(12, 8)"],
-   ans:2, exp:"Matplotlib's default figure size is (6.4, 4.8) inches, set by `rcParams['figure.figsize']`."},
+const questions=[
+  {u:1,q:"What is the primary purpose of descriptive statistics?",opts:["Draw conclusions about a population from a sample","Summarize and describe the features of a dataset","Predict future outcomes using probability","Test hypotheses using inferential methods"],ans:1,exp:"Descriptive statistics organize, summarize, and present data features without going beyond the data itself."},
+  {u:1,q:"Which of the following best describes inferential statistics?",opts:["Calculating mean and median of raw data","Drawing conclusions about a population based on a sample","Counting the frequency of observations","Constructing bar charts and histograms"],ans:1,exp:"Inferential statistics use sample data to make inferences or predictions about a larger population."},
+  {u:1,q:"A random variable that can take any value within a range is called:",opts:["Discrete random variable","Nominal variable","Continuous random variable","Categorical variable"],ans:2,exp:"Continuous random variables can take any value within an interval, unlike discrete ones which take countable values."},
+  {u:1,q:"The normal probability distribution is also known as:",opts:["Poisson distribution","Bell curve","Binomial distribution","Skewed distribution"],ans:1,exp:"The normal distribution is famously shaped like a bell, symmetric about its mean."},
+  {u:1,q:"In a normal distribution, what percentage of data falls within ±1 standard deviation of the mean?",opts:["68%","95%","99.7%","50%"],ans:0,exp:"The empirical rule (68-95-99.7 rule) states approximately 68% of data falls within ±1σ."},
+  {u:1,q:"Which sampling technique divides the population into subgroups and samples from each?",opts:["Simple random sampling","Systematic sampling","Stratified sampling","Cluster sampling"],ans:2,exp:"Stratified sampling divides population into strata (subgroups) and samples proportionally from each."},
+  {u:1,q:"Nominal data is best described as:",opts:["Data with a meaningful order and equal intervals","Data with categories without any natural order","Data measured on a continuous scale","Data with a true zero point"],ans:1,exp:"Nominal data consists of categories with no inherent ranking, e.g., gender, eye color, religion."},
+  {u:1,q:"Which of the following is an example of ordinal data?",opts:["Temperature in Celsius","Customer satisfaction rating (1–5 stars)","Weight in kilograms","Blood type (A, B, AB, O)"],ans:1,exp:"Ordinal data has a meaningful order but unequal intervals between values, like satisfaction ratings."},
+  {u:1,q:"What is the key difference between ordinal and nominal data?",opts:["Ordinal data has a true zero; nominal does not","Ordinal data has a natural order; nominal does not","Nominal data is numerical; ordinal is categorical","They are the same type of data"],ans:1,exp:"The defining feature of ordinal data is its meaningful ranking/ordering, which nominal data lacks."},
+  {u:1,q:"Which Python library is most commonly used for numerical computing?",opts:["Matplotlib","Pandas","NumPy","Seaborn"],ans:2,exp:"NumPy (Numerical Python) is the foundational library for numerical computation and array operations in Python."},
+  {u:1,q:"What does the `//` operator do in Python?",opts:["Modulus (remainder)","Exponentiation","Floor division","Regular division"],ans:2,exp:"The `//` operator performs floor division, returning the integer quotient rounded down."},
+  {u:1,q:"Which data type in Python is immutable and ordered?",opts:["List","Dictionary","Set","Tuple"],ans:3,exp:"Tuples are ordered and immutable — once created, their elements cannot be changed."},
+  {u:1,q:"What is the output of `type(3.14)` in Python?",opts:["&lt;class 'int'&gt;","&lt;class 'str'&gt;","&lt;class 'float'&gt;","&lt;class 'complex'&gt;"],ans:2,exp:"3.14 is a floating-point number, so Python's type() returns <class 'float'>."},
+  {u:1,q:"Which library is used for creating static, animated, and interactive visualizations in Python?",opts:["NumPy","Pandas","Matplotlib","Scikit-learn"],ans:2,exp:"Matplotlib is the core Python plotting library for creating a wide variety of static and interactive charts."},
+  {u:1,q:"What is the use of the `%` operator in Python?",opts:["Exponentiation","Floor division","Modulus (remainder after division)","Bitwise AND"],ans:2,exp:"The `%` operator returns the remainder when one number is divided by another."},
+  {u:1,q:"The mean of a normal distribution is always:",opts:["Greater than the median","Less than the mode","Equal to the median and mode","Different from the median"],ans:2,exp:"In a perfect normal distribution, mean = median = mode, all located at the center."},
+  {u:1,q:"A population parameter estimated from a sample is called a:",opts:["Variable","Statistic","Constant","Distribution"],ans:1,exp:"A sample statistic (like sample mean x̄) estimates the corresponding population parameter (like μ)."},
+  {u:1,q:"Which of the following is NOT a Python arithmetic operator?",opts:["**","//","%","&&"],ans:3,exp:"&& is not a Python operator. Python uses `and` for logical AND. && is used in languages like C/Java."},
+  {u:1,q:"Seaborn is built on top of which library?",opts:["NumPy","Pandas","Matplotlib","SciPy"],ans:2,exp:"Seaborn is a high-level statistical visualization library built on top of Matplotlib."},
+  {u:1,q:"What type of data is 'country of birth'?",opts:["Continuous","Ordinal","Nominal","Interval"],ans:2,exp:"Country of birth is nominal data — it represents categories with no natural ordering."},
+  {u:1,q:"In Python, which keyword is used to define a function?",opts:["func","define","def","function"],ans:2,exp:"Python uses the `def` keyword to define a function, followed by the function name and parameters."},
+  {u:1,q:"Which of the following represents a discrete random variable?",opts:["Height of a person","Temperature of a city","Number of students in a class","Weight of a fruit"],ans:2,exp:"Number of students is countable and can only take integer values — a classic discrete random variable."},
+  {u:1,q:"What does the `!=` operator check in Python?",opts:["Assignment","Equality","Not equal to","Greater than"],ans:2,exp:"`!=` is the 'not equal to' comparison operator, returning True if operands are not equal."},
+  {u:1,q:"Which visualization library allows interactive plots with hover/zoom features in Python?",opts:["Matplotlib","Seaborn","Plotly","NumPy"],ans:2,exp:"Plotly creates interactive visualizations with features like hover tooltips, zoom, and pan."},
+  {u:1,q:"The standard deviation measures:",opts:["The central value of data","The spread of data around the mean","The skewness of the distribution","The number of observations"],ans:1,exp:"Standard deviation quantifies the amount of variation/spread of values around the mean."},
+  {u:1,q:"Which statement about Python lists is TRUE?",opts:["Lists are immutable","Lists can only store integers","Lists are ordered and mutable","Lists cannot contain duplicate values"],ans:2,exp:"Python lists are ordered, mutable (changeable), and can contain duplicates and mixed data types."},
+  {u:1,q:"A `z-score` tells us:",opts:["The frequency of a value","How many standard deviations a value is from the mean","The median of the dataset","The interquartile range"],ans:1,exp:"The z-score standardizes a value showing its distance from the mean in standard deviation units."},
+  {u:1,q:"Which Python data structure uses key-value pairs?",opts:["List","Tuple","Set","Dictionary"],ans:3,exp:"Dictionaries store data as key-value pairs, allowing fast lookup by key."},
+  {u:1,q:"In sampling, what is a 'sampling frame'?",opts:["The shape of data distribution","The complete list from which a sample is drawn","The margin of error","The sample size formula"],ans:1,exp:"A sampling frame is the complete list of all members of the population from which a sample is selected."},
+  {u:1,q:"Plotly Express is part of which library?",opts:["Matplotlib","Seaborn","Plotly","Bokeh"],ans:2,exp:"Plotly Express is a high-level interface within the Plotly library for creating figures quickly."},
+  {u:1,q:"Which of the following correctly installs a Python library?",opts:["install pandas","python get pandas","pip install pandas","get-pip pandas"],ans:2,exp:"`pip install <library>` is the standard command to install Python packages from PyPI."},
+  {u:1,q:"Boolean data type in Python can hold:",opts:["Any integer value","Only True or False","Any string value","Float values between 0 and 1"],ans:1,exp:"Python's bool type holds only two values: True or False (which also equal 1 and 0 numerically)."},
+  {u:1,q:"Which of these is an example of interval data?",opts:["Eye color","Blood type","Temperature in Celsius","Number of siblings"],ans:2,exp:"Temperature in Celsius is interval data — it has equal intervals but no true zero (0°C is not 'no temperature')."},
+  {u:2,q:"What does NumPy stand for?",opts:["New Python","Numerical Python","Next Python","Node Python"],ans:1,exp:"NumPy stands for Numerical Python — it's Python's core library for numerical array computation."},
+  {u:2,q:"Which Pandas data structure is a one-dimensional labeled array?",opts:["DataFrame","Array","Series","Matrix"],ans:2,exp:"A Pandas Series is a one-dimensional labeled array capable of holding any data type."},
+  {u:2,q:"Which Pandas data structure is a two-dimensional labeled table?",opts:["Series","Array","Matrix","DataFrame"],ans:3,exp:"A DataFrame is a 2D labeled data structure like a spreadsheet or SQL table, with rows and columns."},
+  {u:2,q:"How do you import Pandas in Python?",opts:["import pandas","import pd","import pandas as pd","from pandas import *"],ans:2,exp:"The conventional way is `import pandas as pd`, making all pandas functions accessible via `pd`."},
+  {u:2,q:"Which function reads a CSV file in Pandas?",opts:["pd.load_csv()","pd.read_csv()","pd.open_csv()","pd.import_csv()"],ans:1,exp:"`pd.read_csv('filename.csv')` is the standard Pandas function to load CSV files into a DataFrame."},
+  {u:2,q:"What does `df.head()` return by default?",opts:["Last 5 rows","First 10 rows","First 5 rows","Column names only"],ans:2,exp:"`df.head()` returns the first 5 rows of a DataFrame by default. Use `df.head(n)` for n rows."},
+  {u:2,q:"Which method is used to check for missing values in a DataFrame?",opts:["df.missing()","df.isnull()","df.na_check()","df.checkna()"],ans:1,exp:"`df.isnull()` returns a boolean DataFrame indicating which values are NaN/missing."},
+  {u:2,q:"How do you drop rows with missing values in Pandas?",opts:["df.remove_na()","df.drop_missing()","df.dropna()","df.clean()"],ans:2,exp:"`df.dropna()` removes all rows that contain at least one missing value (NaN)."},
+  {u:2,q:"Which function fills missing values with a specified value?",opts:["df.replace_na()","df.fill()","df.fillna()","df.impute()"],ans:2,exp:"`df.fillna(value)` replaces all NaN entries with the specified value."},
+  {u:2,q:"What does `df.describe()` provide?",opts:["Column data types","Summary statistics (count, mean, std, min, max, quartiles)","First 5 rows of data","Number of missing values"],ans:1,exp:"`df.describe()` generates descriptive statistics including count, mean, std, min, max, and quartiles."},
+  {u:2,q:"Which Pandas method is used to group data by a column?",opts:["df.sort_by()","df.groupby()","df.cluster()","df.partition()"],ans:1,exp:"`df.groupby('col')` splits data into groups based on column values, enabling aggregation operations."},
+  {u:2,q:"What does vectorized computation mean in NumPy?",opts:["Using for loops on arrays","Performing operations element-wise on entire arrays without explicit loops","Storing data in vectors","Converting data to vectors"],ans:1,exp:"Vectorized operations apply functions to entire arrays at once without Python loops, making them much faster."},
+  {u:2,q:"How do you select a column named 'Age' from DataFrame `df`?",opts:["df.Age","df['Age']","Both A and B","df.get('Age')"],ans:2,exp:"Both `df.Age` (dot notation) and `df['Age']` (bracket notation) work to select a column. Both A and B is correct."},
+  {u:2,q:"Which function merges two DataFrames on a common key?",opts:["pd.combine()","pd.concat()","pd.merge()","pd.join_tables()"],ans:2,exp:"`pd.merge(df1, df2, on='key')` merges DataFrames similar to SQL JOINs based on a common column."},
+  {u:2,q:"What does `pd.concat([df1, df2])` do?",opts:["Merges on a key column","Concatenates DataFrames along an axis (stacking rows/columns)","Joins on index","Computes element-wise sum"],ans:1,exp:"`pd.concat()` concatenates DataFrames by stacking them along a specified axis (default: rows)."},
+  {u:2,q:"What is hierarchical indexing in Pandas called?",opts:["MultiIndex","SubIndex","NestedIndex","LayerIndex"],ans:0,exp:"Pandas MultiIndex (hierarchical indexing) allows multiple levels of indexing on a single axis."},
+  {u:2,q:"What does `df.pivot_table()` do?",opts:["Rotates the entire DataFrame 90°","Creates a spreadsheet-style pivot table with aggregation","Converts columns to rows","Removes duplicate rows"],ans:1,exp:"`df.pivot_table()` creates a summary table by aggregating values grouped by specified row/column labels."},
+  {u:2,q:"Which method sorts a DataFrame by a specific column?",opts:["df.order_by()","df.sort_values()","df.arrange()","df.rank()"],ans:1,exp:"`df.sort_values('col')` sorts the DataFrame by the specified column in ascending order by default."},
+  {u:2,q:"What does the `str.replace()` method do on a Pandas Series?",opts:["Replaces entire column values","Replaces substrings within string values","Deletes matching rows","Converts strings to integers"],ans:1,exp:"`Series.str.replace(old, new)` replaces occurrences of a substring within each string element."},
+  {u:2,q:"Which method gives the data types of all columns in a DataFrame?",opts:["df.info()","df.dtypes","df.types()","Both A and B"],ans:3,exp:"Both `df.dtypes` (returns Series of dtype per column) and `df.info()` display column data types."},
+  {u:2,q:"How do you write a DataFrame to a CSV file?",opts:["df.save_csv('file.csv')","df.to_csv('file.csv')","df.export('file.csv')","df.write_csv('file.csv')"],ans:1,exp:"`df.to_csv('filename.csv')` writes the DataFrame to a CSV file. Use `index=False` to skip row numbers."},
+  {u:2,q:"What does `df.shape` return?",opts:["Column names","Row count only","A tuple of (rows, columns)","Memory size of the DataFrame"],ans:2,exp:"`df.shape` returns a tuple `(number_of_rows, number_of_columns)` — the dimensions of the DataFrame."},
+  {u:2,q:"Which aggregation function calculates the mean in a groupby operation?",opts:[".sum()",".mean()",".count()",".avg()"],ans:1,exp:"`.mean()` calculates the arithmetic mean of numeric values within each group after `groupby()`."},
+  {u:2,q:"What is data wrangling?",opts:["Visualizing data using charts","The process of cleaning, transforming, and preparing raw data for analysis","Writing SQL queries","Loading data from databases"],ans:1,exp:"Data wrangling (munging) is the process of cleaning, transforming, and mapping raw data into a suitable format for analysis."},
+  {u:2,q:"Which method removes duplicate rows in a DataFrame?",opts:["df.unique()","df.drop_duplicates()","df.remove_dup()","df.deduplicate()"],ans:1,exp:"`df.drop_duplicates()` removes duplicate rows, keeping the first occurrence by default."},
+  {u:2,q:"How do you rename columns in Pandas?",opts:["df.change_columns()","df.rename(columns={...})","df.relabel()","df.columns.update()"],ans:1,exp:"`df.rename(columns={'old_name': 'new_name'})` renames specified columns in a DataFrame."},
+  {u:2,q:"What does `df.melt()` do?",opts:["Sorts the DataFrame","Converts wide-format data to long-format (unpivots)","Merges two DataFrames","Removes NaN values"],ans:1,exp:"`df.melt()` unpivots a DataFrame from wide format to long format, useful for data reshaping."},
+  {u:2,q:"Which Pandas function reads an Excel file?",opts:["pd.read_excel()","pd.load_excel()","pd.open_excel()","pd.import_excel()"],ans:0,exp:"`pd.read_excel('file.xlsx')` reads an Excel file into a Pandas DataFrame."},
+  {u:2,q:"What does `df.loc[]` do?",opts:["Selects by integer position","Selects by label/index name","Filters by condition only","Selects random rows"],ans:1,exp:"`df.loc[]` is label-based indexing — it selects rows and columns using their names/labels."},
+  {u:2,q:"What does `df.iloc[]` do?",opts:["Selects by label/index name","Selects by integer position","Selects using SQL-like syntax","Selects by boolean mask"],ans:1,exp:"`df.iloc[]` is integer-position based indexing — it selects rows/columns by their numeric position."},
+  {u:2,q:"Which method applies a function to each element of a DataFrame?",opts:["df.map()","df.applymap() / df.map()","df.transform()","df.execute()"],ans:1,exp:"`df.applymap()` (deprecated in newer Pandas, replaced by `df.map()`) applies a function element-wise."},
+  {u:2,q:"What is the difference between `inner` and `outer` join in `pd.merge()`?",opts:["Inner keeps all rows; outer keeps only matching rows","Inner keeps only matching rows; outer keeps all rows from both DataFrames","They produce identical results","Outer keeps rows only from the left DataFrame"],ans:1,exp:"INNER join returns only matching rows; OUTER join returns all rows from both DataFrames, filling unmatched with NaN."},
+  {u:2,q:"Which method computes the correlation matrix of a DataFrame?",opts:["df.covariance()","df.corr()","df.correlation()","df.relate()"],ans:1,exp:"`df.corr()` computes pairwise correlation of columns, useful for identifying linear relationships."},
+  {u:3,q:"Jupyter Notebook files are saved with which extension?",opts:[".py",".ipynb",".jnb",".nb"],ans:1,exp:"Jupyter Notebooks are saved as `.ipynb` (Interactive Python Notebook) files in JSON format."},
+  {u:3,q:"Which magic command runs a Python script in Jupyter Notebook?",opts:["%run","%exec","%load","%start"],ans:0,exp:"`%run script.py` executes a Python script file directly within a Jupyter Notebook cell."},
+  {u:3,q:"What is the correct way to import Matplotlib for plotting?",opts:["import matplotlib","import matplotlib.pyplot","import matplotlib.pyplot as plt","from matplotlib import plot"],ans:2,exp:"The standard convention is `import matplotlib.pyplot as plt`, making all plot functions accessible via `plt`."},
+  {u:3,q:"Which function creates a line plot in Matplotlib?",opts:["plt.line()","plt.lineplot()","plt.plot()","plt.draw()"],ans:2,exp:"`plt.plot(x, y)` creates a line plot. It's the most fundamental Matplotlib plotting function."},
+  {u:3,q:"Which function creates a bar chart in Matplotlib?",opts:["plt.bar_chart()","plt.bar()","plt.column()","plt.barchart()"],ans:1,exp:"`plt.bar(x, height)` creates a vertical bar chart. `plt.barh()` creates a horizontal bar chart."},
+  {u:3,q:"Which function creates a histogram in Matplotlib?",opts:["plt.hist()","plt.histogram()","plt.distplot()","plt.freq()"],ans:0,exp:"`plt.hist(data, bins=n)` creates a histogram showing the frequency distribution of data."},
+  {u:3,q:"What does `plt.show()` do?",opts:["Saves the figure to a file","Displays the rendered plot on screen","Clears the current figure","Closes the plot window"],ans:1,exp:"`plt.show()` renders and displays the currently built plot to the screen or notebook output."},
+  {u:3,q:"How do you add a title to a Matplotlib plot?",opts:["plt.heading('title')","plt.label('title')","plt.title('title')","plt.add_title('title')"],ans:2,exp:"`plt.title('Your Title')` adds a title above the plot area."},
+  {u:3,q:"Which function adds a label to the x-axis?",opts:["plt.x_label()","plt.xlabel()","plt.label_x()","plt.axis_label('x')"],ans:1,exp:"`plt.xlabel('Label')` sets the label for the x-axis of the current plot."},
+  {u:3,q:"How do you create a scatter plot in Matplotlib?",opts:["plt.scatter(x, y)","plt.points(x, y)","plt.dot(x, y)","plt.plot_scatter(x, y)"],ans:0,exp:"`plt.scatter(x, y)` creates a scatter plot, displaying individual data points as markers."},
+  {u:3,q:"What does `plt.legend()` do?",opts:["Sets the axis limits","Displays a legend box showing what each line/color represents","Adds grid lines","Removes axes"],ans:1,exp:"`plt.legend()` displays a legend that identifies the different data series in a plot."},
+  {u:3,q:"What is a subplot in Matplotlib?",opts:["A type of bar chart","Multiple plots arranged in a single figure","A plot with two y-axes","A zoomed-in section of a plot"],ans:1,exp:"Subplots allow multiple axes/plots to be placed in a grid layout within a single figure."},
+  {u:3,q:"Which function creates subplots in Matplotlib?",opts:["plt.subplot_grid()","plt.make_subplots()","plt.subplots()","plt.grid_plot()"],ans:2,exp:"`fig, axes = plt.subplots(rows, cols)` creates a figure with a grid of subplots."},
+  {u:3,q:"What is a Waffle Chart used for?",opts:["Showing correlation between variables","Visualizing part-to-whole relationships using a grid of squares","Plotting time series data","Showing distribution of continuous data"],ans:1,exp:"Waffle charts use a grid of colored squares to display proportional/part-to-whole relationships in an engaging way."},
+  {u:3,q:"Which Python library is specifically designed to create Waffle Charts?",opts:["Matplotlib","pywaffle","Seaborn","Plotly"],ans:1,exp:"The `pywaffle` library extends Matplotlib to create waffle charts easily using the `Waffle` figure class."},
+  {u:3,q:"What does `plt.savefig('plot.png')` do?",opts:["Loads a plot from file","Saves the current figure to a file","Displays the plot","Exports data to CSV"],ans:1,exp:"`plt.savefig('filename.png')` saves the current figure to a file in the specified format (png, pdf, svg, etc.)."},
+  {u:3,q:"Which parameter controls the number of bins in `plt.hist()`?",opts:["size","count","bins","intervals"],ans:2,exp:"The `bins` parameter in `plt.hist(data, bins=20)` controls how many intervals the data is divided into."},
+  {u:3,q:"What is the purpose of `plt.tight_layout()`?",opts:["Increases plot size","Adjusts spacing between subplots to prevent overlap","Adds grid lines","Resets the figure"],ans:1,exp:"`plt.tight_layout()` automatically adjusts subplot parameters so subplots don't overlap each other."},
+  {u:3,q:"What does `plt.grid(True)` do?",opts:["Creates a subplot grid","Adds grid lines to the plot background","Makes the plot interactive","Changes the plot style"],ans:1,exp:"`plt.grid(True)` adds a grid of horizontal and vertical lines to the plot for easier reading of values."},
+  {u:3,q:"Which parameter in `plt.plot()` changes line style to dashed?",opts:["line='--'","style='dashed'","linestyle='--'","ls='dashed'"],ans:2,exp:"The `linestyle='--'` (or `ls='--'`) parameter in `plt.plot()` renders the line as a dashed pattern."},
+  {u:3,q:"What does `figsize=(10, 6)` control in Matplotlib?",opts:["Font size","DPI resolution","Width and height of the figure in inches","Number of subplots"],ans:2,exp:"`figsize=(width, height)` in `plt.figure()` or `plt.subplots()` sets the figure dimensions in inches."},
+  {u:3,q:"Which Matplotlib function creates a pie chart?",opts:["plt.pie_chart()","plt.circle()","plt.pie()","plt.donut()"],ans:2,exp:"`plt.pie(values, labels=labels)` creates a pie chart showing proportional data."},
+  {u:3,q:"What is the Matplotlib object-oriented (OO) approach?",opts:["Using only plt.functions","Creating Figure and Axes objects explicitly for more control","Using Seaborn instead of Matplotlib","Automating plot generation"],ans:1,exp:"The OO approach creates `fig, ax = plt.subplots()` and calls methods on `ax` directly for greater flexibility."},
+  {u:3,q:"Which function adds a horizontal line to a plot in Matplotlib?",opts:["plt.hline()","plt.axhline()","plt.horizontal()","plt.h_line()"],ans:1,exp:"`plt.axhline(y=value)` draws a horizontal line spanning the full width of the plot at the specified y-value."},
+  {u:3,q:"What does the `alpha` parameter control in Matplotlib plots?",opts:["Axis angle","Font size","Transparency/opacity of plot elements","Color saturation"],ans:2,exp:"The `alpha` parameter (0 to 1) controls the transparency of plot elements; 0 = fully transparent, 1 = fully opaque."},
+  {u:3,q:"Which Jupyter Notebook cell type executes Python code?",opts:["Markdown cell","Raw cell","Code cell","Text cell"],ans:2,exp:"Code cells in Jupyter Notebook contain Python code that can be executed, displaying output below the cell."},
+  {u:3,q:"How do you change the color of a line in `plt.plot()`?",opts:["plt.plot(x, y, shade='red')","plt.plot(x, y, color='red')","plt.plot(x, y, fill='red')","plt.plot(x, y, hue='red')"],ans:1,exp:"The `color` parameter (`color='red'` or `color='#ff0000'`) sets the line color in `plt.plot()`."},
+  {u:3,q:"What is the output of `np.arange(0, 10, 2)`?",opts:["[0,1,2,3,4,5,6,7,8,9]","[0,2,4,6,8]","[2,4,6,8,10]","[0,2,4,6,8,10]"],ans:1,exp:"`np.arange(start, stop, step)` generates [0,2,4,6,8] — it stops BEFORE 10, with step=2."},
+  {u:3,q:"Which function in NumPy creates an array of zeros?",opts:["np.empty()","np.zero()","np.zeros()","np.blank()"],ans:2,exp:"`np.zeros(shape)` creates an array filled with 0.0 values of the specified shape."},
+  {u:3,q:"What does `plt.style.use('ggplot')` do?",opts:["Imports ggplot library","Applies a pre-defined visual style to all subsequent plots","Creates a new subplot","Adds a grid"],ans:1,exp:"`plt.style.use('ggplot')` applies R's ggplot aesthetic style (gray background, colored gridlines) to Matplotlib plots."},
+  {u:3,q:"How do you add text annotation to a specific point on a Matplotlib plot?",opts:["plt.text() or plt.annotate()","plt.label_point()","plt.add_text()","plt.mark()"],ans:0,exp:"Both `plt.text(x, y, 'string')` and `plt.annotate('text', xy=(x,y))` add text annotations to specific plot coordinates."},
+  {u:3,q:"What does the `marker` parameter do in `plt.plot()`?",opts:["Changes line color","Sets the line thickness","Adds symbols at data points","Adds axis labels"],ans:2,exp:"The `marker` parameter (e.g., `marker='o'` for circles, `marker='s'` for squares) adds symbols at each data point."},
+  {u:3,q:"Which Matplotlib function creates a box plot?",opts:["plt.box()","plt.boxplot()","plt.whisker()","plt.quartile()"],ans:1,exp:"`plt.boxplot(data)` creates a box-and-whisker plot showing median, quartiles, and outliers."},
+  {u:3,q:"What is the default figure size in Matplotlib (in inches)?",opts:["(8, 6)","(10, 8)","(6.4, 4.8)","(12, 8)"],ans:2,exp:"Matplotlib's default figure size is (6.4, 4.8) inches, set by `rcParams['figure.figsize']`."},
 ];
 
-let answered = {};
-let activeFilter = 'all';
-let currentUnit = null;
-
-const unitMeta = {
-  'all': { label:'🌐 All Units · Full Test', color:'var(--text)', questions: () => questions },
-  1:     { label:'📊 Unit I · Stats & Python', color:'var(--unit1)', questions: () => questions.filter(q=>q.u===1) },
-  2:     { label:'🐼 Unit II · Pandas', color:'var(--unit2)', questions: () => questions.filter(q=>q.u===2) },
-  3:     { label:'📈 Unit III · Matplotlib', color:'var(--unit3)', questions: () => questions.filter(q=>q.u===3) },
+let answered={},currentUnit=null;
+const UM={
+  'all':{label:'🌐 All Units · Full Test',color:'var(--text)',Q:()=>questions},
+  1:{label:'📊 Unit I · Stats & Python',color:'var(--lime)',Q:()=>questions.filter(q=>q.u===1)},
+  2:{label:'🐼 Unit II · Pandas',color:'var(--green)',Q:()=>questions.filter(q=>q.u===2)},
+  3:{label:'📈 Unit III · Matplotlib',color:'var(--yellow)',Q:()=>questions.filter(q=>q.u===3)},
 };
+const getQ=()=>UM[currentUnit].Q();
 
-function getFilteredQuestions() {
-  return unitMeta[currentUnit] ? unitMeta[currentUnit].questions() : questions;
+function selectUnit(u){
+  currentUnit=u;answered={};
+  document.getElementById('welcomeScreen').style.display='none';
+  document.getElementById('quizScreen').style.display='block';
+  document.getElementById('scoreBar').style.display='flex';
+  const m=UM[u],lbl=document.getElementById('quizUnitLabel');
+  lbl.textContent=m.label;lbl.style.color=m.color;
+  renderQ(getQ());updateStats();window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function selectUnit(unit) {
-  currentUnit = unit;
-  answered = {};
-  activeFilter = unit;
-
-  // Switch screens
-  document.getElementById('welcomeScreen').style.display = 'none';
-  document.getElementById('quizScreen').style.display = 'block';
-  document.getElementById('scoreBar').style.display = 'flex';
-
-  // Update quiz strip
-  const meta = unitMeta[unit];
-  document.getElementById('quizUnitLabel').textContent = meta.label;
-  document.getElementById('quizUnitLabel').style.color = meta.color;
-
-  renderQuestions(getFilteredQuestions());
-  updateStats();
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-function goHome() {
-  answered = {};
-  currentUnit = null;
-  document.getElementById('welcomeScreen').style.display = 'block';
-  document.getElementById('quizScreen').style.display = 'none';
-  document.getElementById('scoreBar').style.display = 'none';
+function goHome(){
+  answered={};currentUnit=null;
+  document.getElementById('welcomeScreen').style.display='flex';
+  document.getElementById('quizScreen').style.display='none';
+  document.getElementById('scoreBar').style.display='none';
   document.getElementById('resultsPanel').classList.remove('show');
-  document.getElementById('questionsContainer').innerHTML = '';
+  document.getElementById('questionsContainer').innerHTML='';
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function renderQuestions(list) {
-  const container = document.getElementById('questionsContainer');
-  container.innerHTML = '';
-  const total = list.length;
-  list.forEach((q, idx) => {
-    const globalIdx = questions.indexOf(q);
-    const card = document.createElement('div');
-    card.className = 'q-card';
-    card.id = `card-${globalIdx}`;
-    if (answered[globalIdx] !== undefined) {
-      card.classList.add(answered[globalIdx] === q.ans ? 'answered-correct' : 'answered-wrong');
-    }
-    card.style.animationDelay = `${Math.min(idx * 0.03, 0.5)}s`;
-
-    const unitColors = {1:'u1',2:'u2',3:'u3'};
-    const unitLabels = {1:'U1',2:'U2',3:'U3'};
-    const optLetters = ['A','B','C','D'];
-
-    let optsHtml = q.opts.map((o, oi) => {
-      let cls = 'opt';
-      if (answered[globalIdx] !== undefined) {
-        if (oi === q.ans) cls += ' correct';
-        else if (oi === answered[globalIdx] && answered[globalIdx] !== q.ans) cls += ' wrong';
-      }
-      return `<button class="${cls}" onclick="selectAnswer(${globalIdx},${oi})"
-        ${answered[globalIdx] !== undefined ? 'disabled' : ''}
-        id="opt-${globalIdx}-${oi}">
-        <span class="opt-label">${optLetters[oi]}</span>${o}
-      </button>`;
+function renderQ(list){
+  const c=document.getElementById('questionsContainer');c.innerHTML='';
+  list.forEach((q,i)=>{
+    const gi=questions.indexOf(q),lk=answered[gi]!==undefined;
+    const card=document.createElement('div');
+    card.className='qcard'+(lk?(answered[gi]===q.ans?' ok':' no'):'');
+    card.id='card-'+gi;card.style.animationDelay=Math.min(i*.035,.6)+'s';
+    const uc={1:'u1',2:'u2',3:'u3'},ul={1:'U1',2:'U2',3:'U3'},L=['A','B','C','D'];
+    const opts=q.opts.map((o,oi)=>{
+      let cl='opt';
+      if(lk){if(oi===q.ans)cl+=' correct';else if(oi===answered[gi])cl+=' wrong';}
+      return `<button class="${cl}" onclick="pick(${gi},${oi})" ${lk?'disabled':''} id="o-${gi}-${oi}">
+        <span class="oletter">${L[oi]}</span>${o}</button>`;
     }).join('');
-
-    const expCls = answered[globalIdx] !== undefined ? 'q-explanation show' : 'q-explanation';
-
-    card.innerHTML = `
-      <div class="q-header">
-        <div class="q-num ${unitColors[q.u]}">${unitLabels[q.u]} · Q${idx+1}</div>
-        <div class="q-text">${q.q}</div>
-      </div>
-      <div class="options">${optsHtml}</div>
-      <div class="${expCls}" id="exp-${globalIdx}">💡 ${q.exp}</div>
-    `;
-    container.appendChild(card);
-  });
-  updateProgress();
+    card.innerHTML=`<div class="qhdr"><div class="qbadge ${uc[q.u]}">${ul[q.u]} · Q${i+1}</div>
+      <div class="qtxt">${q.q}</div></div>
+      <div class="opts">${opts}</div>
+      <div class="qexp ${lk?'show':''}" id="exp-${gi}">💡 ${q.exp}</div>`;
+    c.appendChild(card);
+  });updateProg();
 }
 
-function selectAnswer(qIdx, optIdx) {
-  if (answered[qIdx] !== undefined) return;
-  answered[qIdx] = optIdx;
-  const q = questions[qIdx];
-  const card = document.getElementById(`card-${qIdx}`);
-  card.classList.add(optIdx === q.ans ? 'answered-correct' : 'answered-wrong');
-  q.opts.forEach((_, oi) => {
-    const btn = document.getElementById(`opt-${qIdx}-${oi}`);
-    btn.disabled = true;
-    if (oi === q.ans) btn.classList.add('correct');
-    else if (oi === optIdx) btn.classList.add('wrong');
+function pick(gi,oi){
+  if(answered[gi]!==undefined)return;
+  answered[gi]=oi;const q=questions[gi];
+  const card=document.getElementById('card-'+gi);
+  card.classList.add(oi===q.ans?'ok':'no');
+  q.opts.forEach((_,i)=>{
+    const b=document.getElementById(`o-${gi}-${i}`);b.disabled=true;
+    if(i===q.ans)b.classList.add('correct');else if(i===oi)b.classList.add('wrong');
   });
-  document.getElementById(`exp-${qIdx}`).classList.add('show');
+  document.getElementById('exp-'+gi).classList.add('show');
   updateStats();
-  const msg = optIdx === q.ans ? '✅ Correct!' : `❌ Wrong! Answer: ${['A','B','C','D'][q.ans]}`;
-  showToast(msg);
-  checkComplete();
+  toast(oi===q.ans?'✅ Correct!':'❌ Wrong — '+['A','B','C','D'][q.ans]);
+  if(getQ().every(q=>answered[questions.indexOf(q)]!==undefined))setTimeout(showResults,700);
 }
 
-function updateStats() {
-  const list = getFilteredQuestions();
-  const answeredList = list.map(q=>questions.indexOf(q)).filter(i=>answered[i]!==undefined);
-  const correct = answeredList.filter(i=>answered[i]===questions[i].ans).length;
-  document.getElementById('liveScore').textContent = correct;
-  document.getElementById('liveAnswered').textContent = answeredList.length;
-  updateProgress();
+function updateStats(){
+  const list=getQ(),ans=list.map(q=>questions.indexOf(q)).filter(i=>answered[i]!==undefined);
+  const cor=ans.filter(i=>answered[i]===questions[i].ans).length;
+  document.getElementById('liveScore').textContent=cor;
+  document.getElementById('liveAnswered').textContent=ans.length;updateProg();
 }
-
-function updateProgress() {
-  const list = getFilteredQuestions();
-  const total = list.length;
-  const answeredCount = list.map(q=>questions.indexOf(q)).filter(i=>answered[i]!==undefined).length;
-  document.getElementById('progressFill').style.width = total ? `${(answeredCount/total)*100}%` : '0%';
-  document.getElementById('quizProgress').textContent = `${answeredCount} / ${total} answered`;
+function updateProg(){
+  const list=getQ(),total=list.length,done=list.map(q=>questions.indexOf(q)).filter(i=>answered[i]!==undefined).length;
+  document.getElementById('progressFill').style.width=total?`${done/total*100}%`:'0%';
+  document.getElementById('quizProgress').textContent=`${done} / ${total} answered`;
 }
-
-function checkComplete() {
-  const filtered = getFilteredQuestions();
-  const allAnswered = filtered.every(q => answered[questions.indexOf(q)] !== undefined);
-  if (allAnswered) setTimeout(showResults, 600);
-}
-
-function showResults() {
-  const filtered = getFilteredQuestions();
-  const total = filtered.length;
-  const correct = filtered.filter(q => answered[questions.indexOf(q)] === q.ans).length;
-  const wrong = filtered.filter(q => answered[questions.indexOf(q)] !== undefined && answered[questions.indexOf(q)] !== q.ans).length;
-  const skipped = total - correct - wrong;
-  const pct = Math.round((correct/total)*100);
-
-  let letterGrade, gradeClass, gradeTitle, gradeMsg;
-  if      (pct >= 95) { letterGrade='A+'; gradeClass='grade-A-plus';  gradeTitle='🏆 Outstanding!';   gradeMsg='Exceptional! You have fully mastered this topic. Exam ready, Ayush! 🚀'; }
-  else if (pct >= 85) { letterGrade='A';  gradeClass='grade-A';       gradeTitle='🌟 Excellent!';      gradeMsg='Great command over the material. Just a tiny bit more polish needed!'; }
-  else if (pct >= 75) { letterGrade='B+'; gradeClass='grade-B-plus';  gradeTitle='⭐ Very Good!';      gradeMsg='Strong performance! Review the wrong ones and you\'re exam-ready.'; }
-  else if (pct >= 65) { letterGrade='B';  gradeClass='grade-B';       gradeTitle='👍 Good Job!';       gradeMsg='Decent understanding. Focus on weak areas and practice more MCQs.'; }
-  else if (pct >= 50) { letterGrade='C';  gradeClass='grade-C';       gradeTitle='📖 Average';         gradeMsg='You have the basics but need to strengthen concepts. Keep going!'; }
-  else if (pct >= 35) { letterGrade='D';  gradeClass='grade-D';       gradeTitle='📚 Needs Work';      gradeMsg='Don\'t give up! Re-read your notes and retry. You can do it!'; }
-  else                { letterGrade='F';  gradeClass='grade-F';       gradeTitle='💪 Keep Trying!';    gradeMsg='Study the syllabus thoroughly and come back stronger!'; }
-
-  document.getElementById('rBadge').textContent = letterGrade;
-  document.getElementById('rBadge').className = 'grade-badge ' + gradeClass;
-  document.getElementById('rGradeTitle').textContent = gradeTitle;
-  document.getElementById('rGradeMsg').textContent = gradeMsg;
-  document.getElementById('rScore').textContent = pct + '%';
-  document.getElementById('rCorrect').textContent = correct;
-  document.getElementById('rWrong').textContent = wrong;
-  document.getElementById('rPct').textContent = pct + '%';
-  document.getElementById('rSkipped').textContent = skipped;
-
-  const unitData = [
-    { ids:[...Array(33).keys()], barId:'u1bar', statId:'u1stat' },
-    { ids:[...Array(33).keys()].map(i=>i+33), barId:'u2bar', statId:'u2stat' },
-    { ids:[...Array(34).keys()].map(i=>i+66), barId:'u3bar', statId:'u3stat' },
-  ];
-  unitData.forEach(ud => {
-    const relevant = ud.ids.filter(i => i < questions.length);
-    const correctU = relevant.filter(i => answered[i] === questions[i].ans);
-    const pctU = relevant.length ? Math.round((correctU.length/relevant.length)*100) : 0;
-    setTimeout(() => { document.getElementById(ud.barId).style.width = pctU + '%'; }, 400);
-    document.getElementById(ud.statId).textContent = `${correctU.length}/${relevant.length} (${pctU}%)`;
+function showResults(){
+  const list=getQ(),total=list.length;
+  const cor=list.filter(q=>answered[questions.indexOf(q)]===q.ans).length;
+  const wro=list.filter(q=>answered[questions.indexOf(q)]!==undefined&&answered[questions.indexOf(q)]!==q.ans).length;
+  const skip=total-cor-wro,pct=Math.round(cor/total*100);
+  let lg,gc,gt,gm;
+  if(pct>=95){lg='A+';gc='gAp';gt='🏆 Outstanding!';gm='Exceptional! Fully mastered. Exam ready, Ayush! 🚀'}
+  else if(pct>=85){lg='A';gc='gA';gt='🌟 Excellent!';gm='Great command over the material. Almost perfect!'}
+  else if(pct>=75){lg='B+';gc='gBp';gt='⭐ Very Good!';gm="Strong! Review the wrong ones and you're exam-ready."}
+  else if(pct>=65){lg='B';gc='gB';gt='👍 Good Job!';gm='Decent! Focus on weak areas and practice more MCQs.'}
+  else if(pct>=50){lg='C';gc='gC';gt='📖 Average';gm='You have the basics. Strengthen concepts and retry.'}
+  else if(pct>=35){lg='D';gc='gD';gt='📚 Needs Work';gm="Don't give up! Re-read notes for each unit and retry."}
+  else{lg='F';gc='gF';gt='💪 Keep Trying!';gm='Study the syllabus carefully and come back stronger!'}
+  document.getElementById('rBadge').textContent=lg;
+  document.getElementById('rBadge').className='gbadge '+gc;
+  document.getElementById('rGradeTitle').textContent=gt;
+  document.getElementById('rGradeMsg').textContent=gm;
+  document.getElementById('rScore').textContent=pct+'%';
+  document.getElementById('rCorrect').textContent=cor;
+  document.getElementById('rWrong').textContent=wro;
+  document.getElementById('rPct').textContent=pct+'%';
+  document.getElementById('rSkipped').textContent=skip;
+  const ud=[{ids:[...Array(33).keys()],b:'u1bar',s:'u1stat'},
+    {ids:[...Array(33).keys()].map(i=>i+33),b:'u2bar',s:'u2stat'},
+    {ids:[...Array(34).keys()].map(i=>i+66),b:'u3bar',s:'u3stat'}];
+  ud.forEach(u=>{
+    const rel=u.ids.filter(i=>i<questions.length),c=rel.filter(i=>answered[i]===questions[i].ans);
+    const p=rel.length?Math.round(c.length/rel.length*100):0;
+    setTimeout(()=>{document.getElementById(u.b).style.width=p+'%'},500);
+    document.getElementById(u.s).textContent=`${c.length}/${rel.length} (${p}%)`;
   });
-
-  const gradeColorMap = {'grade-A-plus':'#facc15','grade-A':'#a3e635','grade-B-plus':'#4ade80','grade-B':'#86efac','grade-C':'#bef264','grade-D':'#fbbf24','grade-F':'#f87171'};
-  const minMap = {'grade-A-plus':95,'grade-A':85,'grade-B-plus':75,'grade-B':65,'grade-C':50,'grade-D':35,'grade-F':0};
-  document.querySelectorAll('.gs-chip').forEach(chip => {
-    chip.classList.remove('active-chip');
-    chip.style.background = chip.style.color = chip.style.borderColor = '';
-    if (parseInt(chip.dataset.min) === minMap[gradeClass]) {
-      chip.classList.add('active-chip');
-      chip.style.background = gradeColorMap[gradeClass];
-      chip.style.color = '#0a120a';
-      chip.style.borderColor = gradeColorMap[gradeClass];
-    }
+  const cm={gAp:'#facc15',gA:'#a3e635',gBp:'#4ade80',gB:'#86efac',gC:'#bef264',gD:'#fbbf24',gF:'#f87171'};
+  const mm={gAp:95,gA:85,gBp:75,gB:65,gC:50,gD:35,gF:0};
+  document.querySelectorAll('.gs').forEach(ch=>{
+    ch.classList.remove('active');ch.style.cssText='';
+    if(parseInt(ch.dataset.min)===mm[gc]){ch.classList.add('active');ch.style.background=cm[gc];ch.style.borderColor=cm[gc];}
   });
-
-  document.getElementById('resultsPanel').classList.add('show');
-  document.getElementById('resultsPanel').scrollIntoView({behavior:'smooth',block:'center'});
+  const rp=document.getElementById('resultsPanel');
+  rp.classList.add('show');rp.scrollIntoView({behavior:'smooth',block:'center'});
 }
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
+function retryWhole(){
+  answered={};document.getElementById('resultsPanel').classList.remove('show');
+  renderQ(getQ());updateStats();
+  document.getElementById('questionsContainer').scrollIntoView({behavior:'smooth'});
+  toast('🔄 Full test reset — good luck!');
 }
-
-window.onload = () => {
-  document.getElementById('scoreBar').style.display = 'none';
+function retryWrong(){
+  const wrong=getQ().filter(q=>{const gi=questions.indexOf(q);return answered[gi]!==undefined&&answered[gi]!==q.ans;});
+  if(!wrong.length){toast('🎉 No wrong answers to retry!');return;}
+  wrong.forEach(q=>{delete answered[questions.indexOf(q)];});
+  document.getElementById('resultsPanel').classList.remove('show');
+  renderQ(getQ());updateStats();
+  toast(`🔁 Retrying ${wrong.length} wrong question${wrong.length>1?'s':''}!`);
+  document.getElementById('questionsContainer').scrollIntoView({behavior:'smooth'});
+}
+function toast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+window.onload=()=>{
+  document.getElementById('scoreBar').style.display='none';
+  document.getElementById('welcomeScreen').style.cssText='display:flex;flex-direction:column;align-items:center';
 };
 </script>
 </body>
