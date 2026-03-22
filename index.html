@@ -378,12 +378,12 @@ h1.htitle .hl{background:linear-gradient(135deg,var(--lime) 0%,var(--green) 50%,
     <div class="lb-header">
       <div>
         <div class="lb-title">🏆 &nbsp;Global Leaderboard</div>
-        <div style="font-size:.68rem;color:var(--muted2);margin-top:3px;letter-spacing:.3px">
-          🌐 Shared across all devices &amp; players
+        <div style="font-size:.68rem;margin-top:3px;letter-spacing:.3px">
+          <span id="lbStatusBadge" style="color:var(--muted2)">🔄 Connecting...</span>
         </div>
       </div>
       <div style="display:flex;gap:8px;align-items:center">
-        <button class="lb-clear" onclick="refreshLeaderboard()" style="border-color:rgba(163,230,53,.2);color:var(--lime)">⟳ Refresh</button>
+        <button class="lb-clear" onclick="refreshLeaderboard()" style="border-color:rgba(163,230,53,.25);color:var(--lime)">⟳ Refresh</button>
         <button class="lb-clear" onclick="clearLeaderboard()">🗑 Clear All</button>
       </div>
     </div>
@@ -549,35 +549,82 @@ function startWithName(){
   selectUnit(pendingUnit);
 }
 
-/* ── STORAGE HELPERS (shared=true → visible to ALL players on ALL devices) ── */
+/* ══════════════════════════════════════════════
+   GLOBAL LEADERBOARD — JSONStore.io
+   ✅ Free · No signup · No API key · Cross-device
+   All players share the same token URL
+   ══════════════════════════════════════════════ */
+const DB = 'https://www.jsonstore.io/dataviz-mcq-ayush-leaderboard-2025';
+let dbOnline = false;
+
 async function saveScore(entry){
+  const id = 's' + Date.now() + Math.random().toString(36).slice(2,6);
   try{
-    const key='scores:'+Date.now()+':'+Math.random().toString(36).slice(2,7);
-    await window.storage.set(key, JSON.stringify(entry), true);
-  }catch(e){console.warn('Storage save failed:',e)}
+    const res = await fetch(`${DB}/scores/${id}`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(entry)
+    });
+    if(!res.ok) throw new Error('write failed');
+    dbOnline = true;
+  }catch(e){
+    dbOnline = false;
+    /* Fallback: localStorage so score isn't lost */
+    try{
+      const local = JSON.parse(localStorage.getItem('dv_scores')||'[]');
+      local.push(entry);
+      localStorage.setItem('dv_scores', JSON.stringify(local));
+    }catch(_){}
+  }
 }
+
 async function loadScores(){
   try{
-    const res=await window.storage.list('scores:', true);
-    if(!res||!res.keys||!res.keys.length) return [];
-    const scores=[];
-    for(const k of res.keys){
-      try{
-        const r=await window.storage.get(k, true);
-        if(r) scores.push(JSON.parse(r.value));
-      }catch(e){}
-    }
-    return scores.sort((a,b)=>b.pct-a.pct||a.ts-b.ts);
-  }catch(e){return []}
+    const res = await fetch(`${DB}/scores`);
+    if(!res.ok) throw new Error('read failed');
+    const json = await res.json();
+    dbOnline = true;
+    if(!json || !json.result || typeof json.result !== 'object') return localScores();
+    const arr = Object.values(json.result).filter(Boolean);
+    /* also merge any local-only scores saved during offline */
+    const merged = mergeWithLocal(arr);
+    return merged.sort((a,b) => b.pct - a.pct || a.ts - b.ts);
+  }catch(e){
+    dbOnline = false;
+    return localScores();
+  }
 }
-async function clearLeaderboard(){
-  if(!confirm('⚠️ This will clear ALL scores for EVERY player. Are you sure?')) return;
+
+function localScores(){
   try{
-    const res=await window.storage.list('scores:', true);
-    if(res&&res.keys) for(const k of res.keys) await window.storage.delete(k, true);
+    return JSON.parse(localStorage.getItem('dv_scores')||'[]')
+      .sort((a,b) => b.pct - a.pct);
+  }catch(_){ return []; }
+}
+
+function mergeWithLocal(remote){
+  try{
+    const local = JSON.parse(localStorage.getItem('dv_scores')||'[]');
+    if(!local.length) return remote;
+    /* push local-only scores not yet in remote */
+    const rts = new Set(remote.map(s=>s.ts));
+    const extra = local.filter(s => !rts.has(s.ts));
+    return [...remote, ...extra];
+  }catch(_){ return remote; }
+}
+
+async function clearLeaderboard(){
+  if(!confirm('⚠️ This will delete ALL global scores. Are you sure?')) return;
+  try{
+    await fetch(`${DB}/scores`, { method:'DELETE' });
+    localStorage.removeItem('dv_scores');
     renderLeaderboard([]);
-    toast('🗑 Leaderboard cleared for all players!');
-  }catch(e){toast('Could not clear — storage unavailable')}
+    toast('🗑 Leaderboard cleared!');
+  }catch(e){
+    localStorage.removeItem('dv_scores');
+    renderLeaderboard([]);
+    toast('🗑 Local scores cleared (offline mode)');
+  }
 }
 
 /* ── RENDER LEADERBOARD ── */
@@ -609,9 +656,14 @@ function gradeColor(g){
   return m[g]||'var(--muted2)';
 }
 async function refreshLeaderboard(){
-  document.getElementById('lbBody').innerHTML='<div class="lb-loading">Loading scores...</div>';
-  const scores=await loadScores();
+  document.getElementById('lbBody').innerHTML='<div class="lb-loading">⏳ Loading scores...</div>';
+  const scores = await loadScores();
   renderLeaderboard(scores);
+  const badge = document.getElementById('lbStatusBadge');
+  if(badge){
+    badge.textContent = dbOnline ? '🟢 Live · All Devices Synced' : '🟡 Offline · Local Only';
+    badge.style.color  = dbOnline ? 'var(--correct)' : 'var(--yellow)';
+  }
 }
 
 /* ── UNIT SELECTION ── */
