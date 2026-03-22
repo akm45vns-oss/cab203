@@ -226,6 +226,29 @@ h1.htitle .hl{background:linear-gradient(135deg,var(--lime) 0%,var(--green) 50%,
   color:var(--text);z-index:9999;opacity:0;pointer-events:none;
   transition:all .3s cubic-bezier(.4,0,.2,1);white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* FLOATING SUBMIT */
+.float-submit{
+  position:fixed;bottom:32px;right:28px;z-index:500;
+  display:none;align-items:center;gap:8px;
+  padding:13px 24px;border-radius:100px;
+  font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;font-weight:700;
+  cursor:pointer;border:none;letter-spacing:.3px;
+  background:linear-gradient(135deg,var(--lime),var(--green));
+  color:#060d0a;
+  box-shadow:0 6px 28px rgba(163,230,53,0.45),0 2px 8px rgba(0,0,0,.4);
+  transition:all .25s cubic-bezier(.4,0,.2,1);
+  animation:floatPulse 2.5s ease-in-out infinite;
+}
+.float-submit:hover{
+  transform:translateY(-3px) scale(1.04);
+  box-shadow:0 12px 36px rgba(163,230,53,0.55),0 4px 12px rgba(0,0,0,.4);
+  animation:none;
+}
+.float-submit:active{transform:translateY(0) scale(.97)}
+@keyframes floatPulse{
+  0%,100%{box-shadow:0 6px 28px rgba(163,230,53,.45),0 2px 8px rgba(0,0,0,.4)}
+  50%{box-shadow:0 6px 36px rgba(163,230,53,.7),0 2px 8px rgba(0,0,0,.4)}
+}
 ::-webkit-scrollbar{width:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(163,230,53,.2);border-radius:100px}
@@ -317,7 +340,7 @@ h1.htitle .hl{background:linear-gradient(135deg,var(--lime) 0%,var(--green) 50%,
     <div class="logo-text">Data<span>Viz</span> MCQ</div>
   </div>
   <div class="sbar" id="scoreBar" style="display:none">
-    <div class="spill"><span id="liveScore">0</span><span class="sep">/</span><span id="liveAnswered">0</span></div>
+    <div class="spill">Marks:&nbsp;<span id="liveScore">0</span><span class="sep">&nbsp;·&nbsp;</span><span id="liveAnswered">0</span><span class="sep">&nbsp;done</span></div>
     <div class="ptrack"><div class="pfill" id="progressFill"></div></div>
     <button class="hbtn" onclick="goHome()">⌂ Home</button>
   </div>
@@ -411,7 +434,9 @@ h1.htitle .hl{background:linear-gradient(135deg,var(--lime) 0%,var(--green) 50%,
 <div id="quizScreen">
   <div class="qtopbar">
     <div class="qutag" id="quizUnitLabel">Unit I</div>
-    <div class="qprog" id="quizProgress">0 / 0 answered</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="qprog" id="quizProgress">0 / 0 answered</div>
+    </div>
   </div>
   <div class="qcon" id="questionsContainer"></div>
 
@@ -420,13 +445,13 @@ h1.htitle .hl{background:linear-gradient(135deg,var(--lime) 0%,var(--green) 50%,
     <div class="gbadge gAp" id="rBadge">A+</div>
     <div class="rtitle" id="rGradeTitle">Outstanding!</div>
     <div class="rmsg" id="rGradeMsg">You nailed it!</div>
-    <div class="rscore" id="rScore">0%</div>
-    <div class="rscoresub">Overall Score</div>
+    <div class="rscore" id="rScore">0</div>
+    <div class="rscoresub">MARKS SCORED &nbsp;·&nbsp; <span style="color:var(--muted2);font-size:.7rem">(+1 correct · −0.25 wrong · 0 skipped)</span></div>
     <div class="srow">
-      <div class="sbox"><span class="sv c" id="rCorrect">0</span><div class="slb">✅ CORRECT</div></div>
-      <div class="sbox"><span class="sv w" id="rWrong">0</span><div class="slb">❌ WRONG</div></div>
+      <div class="sbox"><span class="sv c" id="rCorrect">0</span><div class="slb">✅ CORRECT (+1)</div></div>
+      <div class="sbox"><span class="sv w" id="rWrong">0</span><div class="slb">❌ WRONG (−0.25)</div></div>
       <div class="sbox"><span class="sv p" id="rPct">0%</span><div class="slb">🎯 ACCURACY</div></div>
-      <div class="sbox"><span class="sv s" id="rSkipped">0</span><div class="slb">⏭ SKIPPED</div></div>
+      <div class="sbox"><span class="sv s" id="rSkipped">0</span><div class="slb">⏭ SKIPPED (0)</div></div>
     </div>
     <div class="bdown">
       <div class="bdtitle">Performance by Unit</div>
@@ -458,6 +483,11 @@ h1.htitle .hl{background:linear-gradient(135deg,var(--lime) 0%,var(--green) 50%,
     </div>
   </div>
 </div>
+<!-- FLOATING SUBMIT BUTTON -->
+<button class="float-submit" id="submitEarlyBtn" onclick="submitEarly()">
+  ✅ &nbsp;Submit Test
+</button>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -717,7 +747,7 @@ function renderLeaderboard(scores){
       ${rank}
       <span class="lb-name">${esc(s.name)}</span>
       <span><span class="lb-unit ${unitCls[s.unit]}">${unitLabel[s.unit]}</span></span>
-      <span class="lb-score">${s.pct}%</span>
+      <span class="lb-score">${s.marks || s.pct+'%'}</span>
       <span class="lb-grade" style="color:${gradeColor(s.grade)}">${s.grade}</span>
       <span class="lb-date">${s.date}</span>
     </div>`;
@@ -753,6 +783,8 @@ function goHome(){
   document.getElementById('scoreBar').style.display='none';
   document.getElementById('resultsPanel').classList.remove('show');
   document.getElementById('questionsContainer').innerHTML='';
+  const btn=document.getElementById('submitEarlyBtn');
+  if(btn) btn.style.display='none';
   refreshLeaderboard();
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -794,11 +826,36 @@ function pick(gi,oi){
   if(getQ().every(q=>answered[questions.indexOf(q)]!==undefined))setTimeout(showResults,700);
 }
 
+function calcMarks(list){
+  const cor  = list.filter(q=>answered[questions.indexOf(q)]===q.ans).length;
+  const wro  = list.filter(q=>answered[questions.indexOf(q)]!==undefined&&answered[questions.indexOf(q)]!==q.ans).length;
+  const skip = list.length - cor - wro;
+  const marks = +(cor * 1 - wro * 0.25).toFixed(2);
+  const pct  = Math.round((cor / list.length) * 100);
+  return {cor, wro, skip, marks, pct};
+}
+
 function updateStats(){
-  const list=getQ(),ans=list.map(q=>questions.indexOf(q)).filter(i=>answered[i]!==undefined);
-  const cor=ans.filter(i=>answered[i]===questions[i].ans).length;
-  document.getElementById('liveScore').textContent=cor;
-  document.getElementById('liveAnswered').textContent=ans.length;updateProg();
+  const list=getQ();
+  const ans=list.map(q=>questions.indexOf(q)).filter(i=>answered[i]!==undefined);
+  const {marks}=calcMarks(list);
+  document.getElementById('liveScore').textContent = marks;
+  document.getElementById('liveAnswered').textContent = ans.length;
+  // Always show submit button during quiz
+  const btn=document.getElementById('submitEarlyBtn');
+  if(btn) btn.style.display='flex';
+  updateProg();
+}
+
+function submitEarly(){
+  const list=getQ();
+  const answered_count=list.map(q=>questions.indexOf(q)).filter(i=>answered[i]!==undefined).length;
+  const unanswered=list.length - answered_count;
+  if(unanswered > 0){
+    const go = confirm(`You have ${unanswered} unanswered question${unanswered>1?'s':''}. Unanswered questions will be marked as skipped.\n\nSubmit anyway?`);
+    if(!go) return;
+  }
+  showResults();
 }
 function updateProg(){
   const list=getQ(),total=list.length,done=list.map(q=>questions.indexOf(q)).filter(i=>answered[i]!==undefined).length;
@@ -807,9 +864,9 @@ function updateProg(){
 }
 function showResults(){
   const list=getQ(),total=list.length;
-  const cor=list.filter(q=>answered[questions.indexOf(q)]===q.ans).length;
-  const wro=list.filter(q=>answered[questions.indexOf(q)]!==undefined&&answered[questions.indexOf(q)]!==q.ans).length;
-  const skip=total-cor-wro,pct=Math.round(cor/total*100);
+  const {cor,wro,skip,marks,pct}=calcMarks(list);
+  const maxMarks=total;
+
   let lg,gc,gt,gm;
   if(pct>=95){lg='A+';gc='gAp';gt='🏆 Outstanding!';gm='Exceptional! Fully mastered. Exam ready, Ayush! 🚀'}
   else if(pct>=85){lg='A';gc='gA';gt='🌟 Excellent!';gm='Great command over the material. Almost perfect!'}
@@ -818,11 +875,12 @@ function showResults(){
   else if(pct>=50){lg='C';gc='gC';gt='📖 Average';gm='You have the basics. Strengthen concepts and retry.'}
   else if(pct>=35){lg='D';gc='gD';gt='📚 Needs Work';gm="Don't give up! Re-read notes for each unit and retry."}
   else{lg='F';gc='gF';gt='💪 Keep Trying!';gm='Study the syllabus carefully and come back stronger!'}
+
   document.getElementById('rBadge').textContent=lg;
   document.getElementById('rBadge').className='gbadge '+gc;
   document.getElementById('rGradeTitle').textContent=gt;
   document.getElementById('rGradeMsg').textContent=gm;
-  document.getElementById('rScore').textContent=pct+'%';
+  document.getElementById('rScore').textContent=marks+' / '+maxMarks;
   document.getElementById('rCorrect').textContent=cor;
   document.getElementById('rWrong').textContent=wro;
   document.getElementById('rPct').textContent=pct+'%';
@@ -848,7 +906,7 @@ function showResults(){
   // Save to leaderboard DB
   const now=new Date();
   const dateStr=now.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'});
-  const entry={name:playerName,pct,score:cor+'/'+total,grade:lg,unit:currentUnit,date:dateStr,ts:Date.now()};
+  const entry={name:playerName,pct,marks:marks+'/'+total,score:cor+'/'+total,grade:lg,unit:currentUnit,date:dateStr,ts:Date.now()};
   saveScore(entry);
 }
 function retryWhole(){
